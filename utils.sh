@@ -13,22 +13,22 @@ CYAN='\033[0;36m'
 WHITE='\033[0;37m'
 
 info() {
-	printf "\r  [ ${BLUE}..${NC} ] $1\n"
+  printf "\r  [ ${BLUE}..${NC} ] $1\n"
 }
 
 ok() {
-	printf "\r${CLEAR}  [ ${GREEN}OK${NC} ] $1\n"
+  printf "\r${CLEAR}  [ ${GREEN}OK${NC} ] $1\n"
 }
 
 err() {
-	printf "\r${CLEAR}  [ ${RED}ERR${NC} ] $1\n"
-	exit
+  printf "\r${CLEAR}  [ ${RED}ERR${NC} ] $1\n"
+  exit
 }
 
 check_cmd() {
-	command -v "$1" >/dev/null 2>&1
+  command -v "$1" >/dev/null 2>&1
 }
 
 check_exist() {
-	command ls "$1" >/dev/null 2>&1
+  command ls "$1" >/dev/null 2>&1
 }
