@@ -20,6 +20,10 @@ ok() {
   printf "\r${CLEAR}  [ ${GREEN}OK${NC} ] $1\n"
 }
 
+warn() {
+  printf "\r${CLEAR}  [ ${YELLOW}!!${NC} ] $1\n"
+}
+
 err() {
   printf "\r${CLEAR}  [ ${RED}ERR${NC} ] $1\n"
   exit
@@ -31,4 +35,17 @@ check_cmd() {
 
 check_exist() {
   command ls "$1" >/dev/null 2>&1
+}
+
+backup() {
+  if ! check_exist "$1"; then
+    warn "File: $1 not found"
+    return
+  fi
+
+  cp "$1"{,.bak}
+
+  if check_exist "$1.bak"; then
+    ok "Backup: $1.bak created"
+  fi
 }
