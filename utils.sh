@@ -34,18 +34,33 @@ check_cmd() {
 }
 
 check_exist() {
-  command ls "$1" >/dev/null 2>&1
+  # command ls "$1" >/dev/null 2>&1
+  test -e "$1" >/dev/null 2>&1
+}
+
+check_folder() {
+  test -d "$1" >/dev/null 2>&1
 }
 
 backup() {
   if ! check_exist "$1"; then
-    warn "File: $1 not found"
+    warn "$1 does not exist"
     return
   fi
 
-  cp "$1"{,.bak}
+  path=${1%/}
 
-  if check_exist "$1.bak"; then
-    ok "Backup: $1.bak created"
+  if check_folder "$1"; then
+    if check_exist "$path.bak"; then
+      rm -r "$path.bak"
+    fi
+    cp -r "$path"{,.bak}
+  else
+    #cp "$1"{,.bak}
+    cp --backup=numbered "$1"{,.bak}
+  fi
+
+  if check_exist "$path.bak"; then
+    ok "Backup of $path created"
   fi
 }
