@@ -1,7 +1,9 @@
 #!/bin/bash
 
-source display.sh
-source check.sh
+DIR_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+source $DIR_PATH/display.sh
+source $DIR_PATH/check.sh
 
 backup() {
   if ! check_exist "$1"; then
