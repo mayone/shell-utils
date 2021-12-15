@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+DIR_PATH=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 source $DIR_PATH/display.sh
 source $DIR_PATH/check.sh
