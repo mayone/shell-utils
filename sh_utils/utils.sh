@@ -9,6 +9,7 @@ DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
 source $DIR_PATH/display.sh
 source $DIR_PATH/check.sh
 source $DIR_PATH/date.sh
+source $DIR_PATH/ip.sh
 
 backup() {
   if ! check_exist "$1"; then
