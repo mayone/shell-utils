@@ -11,11 +11,11 @@ ${INSYDE} \
 "
 
 main() {
-  if [ "$#" = 1 ]; then
-    if [ "$1" = "${GMAIL}" ]; then
+  if [ "$#" == 1 ]; then
+    if [ "$1" == "${GMAIL}" ]; then
       set_name "mayone"
       set_email "mayone321@gmail.com"
-    elif [ "$1" = "${INSYDE}" ]; then
+    elif [ "$1" == "${INSYDE}" ]; then
       set_name "wayne jeng"
       set_email "wayne.jeng@insyde.com"
     else
@@ -44,14 +44,14 @@ set_email() {
 }
 
 show_usage() {
-    echo "Usage:"
-    echo "  $0 <user>"
-    echo ""
-    echo "Users:"
-    for USER in ${USERS}; do
-        echo "  ${USER}"
-    done
-    echo ""
+  echo "Usage:"
+  echo "  $0 <user>"
+  echo ""
+  echo "Users:"
+  for USER in ${USERS}; do
+    echo "  ${USER}"
+  done
+  echo ""
 }
 
 main "$@"
