@@ -23,3 +23,11 @@ get_public_ip() {
     | tail -1 \
     | sed -e 's#.*address \(\)#\1#'
 }
+
+get_private_ip() {
+  ifconfig | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}'
+  # OSX
+  # ipconfig getifaddr en0
+  # Linux
+  # hostname -I | grep -o '^[0-9.]*'
+}
