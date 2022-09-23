@@ -1,8 +1,8 @@
 # Shell-Utilities
 
-## sh_utils
+## utils
 - Scripts with common functions.
-- `utils.sh`: Collection of common functions.
+- `index.sh`: Index file.
 
 ## Others
 - `gitconfig.sh`: Switch user of git config
