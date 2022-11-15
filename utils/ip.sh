@@ -10,11 +10,11 @@ IPV6=6
 # Get public IP address.
 # Arguments:
 #   IP Version number.
-# Returns:
+# Outputs:
 #   IP address as string.
 #######################################
 get_public_ip() {
-  if [[ "$#" == 1 && "$IPV6" =~ "$1" ]]; then
+  if [[ "$#" == 1 && "$1" == "$IPV6" ]]; then
     VER=$IPV6
   else
     VER=$IPV4
