@@ -10,3 +10,4 @@ source $DIR_PATH/display.sh
 source $DIR_PATH/check.sh
 source $DIR_PATH/date.sh
 source $DIR_PATH/ip.sh
+source $DIR_PATH/blockchain.sh
