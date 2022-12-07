@@ -46,15 +46,25 @@ get_block_number() {
     return
   fi
 
+  local rpc_url
+
   if [[ "$1" == "$AMINOX" ]]; then
-    cast block-number --rpc-url "$AMINOX_RPC"
+    rpc_url="$AMINOX_RPC"
   elif [[ "$1" == "$AMINOX_TESTNET" ]]; then
-    cast block-number --rpc-url "$AMINOX_TESTNET_RPC"
+    rpc_url="$AMINOX_TESTNET_RPC"
    elif [[ "$1" == "$BSC" ]]; then
-    cast block-number --rpc-url "$BSC_RPC"
+    rpc_url="$BSC_RPC"
    elif [[ "$1" == "$BSC_TESTNET" ]]; then
-    cast block-number --rpc-url "$BSC_TESTNET_RPC"
+    rpc_url="$BSC_TESTNET_RPC"
   else
-    cast block-number --rpc-url "$1"
+    rpc_url="$1"
   fi
+
+  curl --silent \
+    -X POST \
+    -H 'Content-Type: application/json' \
+    -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+    $rpc_url | jq -r '.result'
+  # https://github.com/foundry-rs/foundry is required for cast
+  # cast block-number --rpc-url $rpc_url
 }
