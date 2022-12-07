@@ -20,6 +20,28 @@ ${BSC} \
 ${BSC_TESTNET} \
 "
 
+get_rpc_url() {
+  if [ "$#" != 1 ]; then
+    return
+  fi
+
+  local rpc_url
+
+  if [[ "$1" == "$AMINOX" ]]; then
+    rpc_url="$AMINOX_RPC"
+  elif [[ "$1" == "$AMINOX_TESTNET" ]]; then
+    rpc_url="$AMINOX_TESTNET_RPC"
+   elif [[ "$1" == "$BSC" ]]; then
+    rpc_url="$BSC_RPC"
+   elif [[ "$1" == "$BSC_TESTNET" ]]; then
+    rpc_url="$BSC_TESTNET_RPC"
+  else
+    rpc_url="$1"
+  fi
+
+  echo $rpc_url
+}
+
 #######################################
 # Get block number.
 # Arguments:
@@ -46,19 +68,7 @@ get_block_number() {
     return
   fi
 
-  local rpc_url
-
-  if [[ "$1" == "$AMINOX" ]]; then
-    rpc_url="$AMINOX_RPC"
-  elif [[ "$1" == "$AMINOX_TESTNET" ]]; then
-    rpc_url="$AMINOX_TESTNET_RPC"
-   elif [[ "$1" == "$BSC" ]]; then
-    rpc_url="$BSC_RPC"
-   elif [[ "$1" == "$BSC_TESTNET" ]]; then
-    rpc_url="$BSC_TESTNET_RPC"
-  else
-    rpc_url="$1"
-  fi
+  local rpc_url="$(get_rpc_url $1)"
 
   curl --silent \
     -X POST \
