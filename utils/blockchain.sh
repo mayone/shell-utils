@@ -70,11 +70,19 @@ get_block_number() {
 
   local rpc_url="$(get_rpc_url $1)"
 
-  curl --silent \
-    -X POST \
-    -H 'Content-Type: application/json' \
-    -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
-    $rpc_url | jq -r '.result'
   # https://github.com/foundry-rs/foundry is required for cast
   # cast block-number --rpc-url $rpc_url
+
+  block_number=$(
+    curl --silent \
+      -X POST \
+      -H 'Content-Type: application/json' \
+      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+      $rpc_url \
+      | jq -r '.result'
+  )
+  # block number in hexadecimal
+  # [ ! -z "$block_number" ] && echo $block_number
+  # block number in decimal
+  [ ! -z "$block_number" ] && echo $((block_number))
 }
