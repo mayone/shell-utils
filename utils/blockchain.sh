@@ -131,6 +131,7 @@ get_block_number() {
   [ ! -z "$block_number" ] && echo $((block_number))
 }
 
-# TODO: Implement other function (these are on BSC Testnet)
+# TODO: Implement other function (these are on bsctestnet)
 # call_rpc $rpc_url "eth_getRawTransactionByHash" "0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"
+# call_rpc $rpc_url "eth_getTransactionReceipt" "0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"
 # call_rpc $rpc_url "eth_getBalance" "0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5" "latest"
