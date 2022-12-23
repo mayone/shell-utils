@@ -20,6 +20,45 @@ ${BSC} \
 ${BSC_TESTNET} \
 "
 
+#######################################
+# Call Ethereum JSON-RPC.
+# Arguments:
+#   RPC URL of the node.
+#   Name of the method.
+#   Parameters.
+# Outputs:
+#   Result from response.
+#######################################
+call_rpc() {
+  if [ "$#" -lt 2 ]; then
+    return
+  fi
+  local rpc_url="$1"
+  local method="$2"
+  local params_array=("${@:3}")
+  # local params=$(IFS=","; printf '%s' "$params_array"; unset IFS)
+  local params=$( printf "%s" "$params_array" | jq -sRc 'split(" ")' )
+  local data=$(echo "{\"jsonrpc\":\"2.0\",\"method\": \"$method\",\"params\":$params,\"id\":1}")
+
+  result=$(
+    curl --silent \
+      -X POST \
+      -H 'Content-Type: application/json' \
+      -d "$data" \
+      $rpc_url \
+      | jq -r '.result'
+  )
+
+  [ ! -z "$result" ] && echo "$result"
+}
+
+#######################################
+# Get RPC URL.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+# Outputs:
+#   RPC URL.
+#######################################
 get_rpc_url() {
   if [ "$#" != 1 ]; then
     return
@@ -45,7 +84,7 @@ get_rpc_url() {
 #######################################
 # Get block number.
 # Arguments:
-#   RPC URL of the node.
+#   Name of the chain or RPC URL of the node.
 # Outputs:
 #   Block number.
 #######################################
@@ -71,18 +110,27 @@ get_block_number() {
   local rpc_url="$(get_rpc_url $1)"
 
   # https://github.com/foundry-rs/foundry is required for cast
-  # cast block-number --rpc-url $rpc_url
+  # block_number=$(
+  #   cast block-number --rpc-url $rpc_url
+  # )
 
-  block_number=$(
-    curl --silent \
-      -X POST \
-      -H 'Content-Type: application/json' \
-      -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
-      $rpc_url \
-      | jq -r '.result'
-  )
+  # block_number=$(
+  #   curl --silent \
+  #     -X POST \
+  #     -H 'Content-Type: application/json' \
+  #     -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+  #     $rpc_url \
+  #     | jq -r '.result'
+  # )
+
+  block_number=$( call_rpc $rpc_url eth_blockNumber )
+
   # block number in hexadecimal
   # [ ! -z "$block_number" ] && echo $block_number
   # block number in decimal
   [ ! -z "$block_number" ] && echo $((block_number))
 }
+
+# TODO: Implement other function (these are on BSC Testnet)
+# call_rpc $rpc_url "eth_getRawTransactionByHash" "0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"
+# call_rpc $rpc_url "eth_getBalance" "0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5" "latest"
