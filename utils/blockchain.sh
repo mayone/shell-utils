@@ -38,13 +38,13 @@ call_rpc() {
   local params_array=("${@:3}")
   # local params=$(IFS=","; printf '%s' "$params_array"; unset IFS)
   local params=$( printf "%s" "$params_array" | jq -sRc 'split(" ")' )
-  local data=$(echo "{\"jsonrpc\":\"2.0\",\"method\": \"$method\",\"params\":$params,\"id\":1}")
+  local data=$( printf '{"jsonrpc":"2.0","method":"%s","params":%s,"id":1}' "$method" "$params" )
 
   result=$(
     curl --silent \
       -X POST \
       -H 'Content-Type: application/json' \
-      -d "$data" \
+      -d $data \
       $rpc_url \
       | jq -r '.result'
   )
@@ -112,15 +112,6 @@ get_block_number() {
   # https://github.com/foundry-rs/foundry is required for cast
   # block_number=$(
   #   cast block-number --rpc-url $rpc_url
-  # )
-
-  # block_number=$(
-  #   curl --silent \
-  #     -X POST \
-  #     -H 'Content-Type: application/json' \
-  #     -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
-  #     $rpc_url \
-  #     | jq -r '.result'
   # )
 
   block_number=$( call_rpc $rpc_url eth_blockNumber )
