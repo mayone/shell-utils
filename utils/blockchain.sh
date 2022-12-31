@@ -107,7 +107,7 @@ get_block_number() {
     return
   fi
 
-  local rpc_url="$(get_rpc_url $1)"
+  local rpc_url="$( get_rpc_url $1 )"
 
   # https://github.com/foundry-rs/foundry is required for cast
   # block_number=$(
@@ -122,7 +122,53 @@ get_block_number() {
   [ ! -z "$block_number" ] && echo $((block_number))
 }
 
+#######################################
+# Get raw transaction.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+# Outputs:
+#   Raw transaction.
+#######################################
+get_raw_tx() {
+   show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url> <tx_hash>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 2 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+  local tx_hash="$2"
+
+  raw_tx=$( call_rpc $rpc_url eth_getRawTransactionByHash $tx_hash )
+
+  [ ! -z "$raw_tx" ] && echo $raw_tx
+}
+
+#######################################
+# Showcase of the functions.
+# Arguments:
+#   None
+# Outputs:
+#   Showcase result.
+#######################################
+blockchain_showcase () {
+  get_rpc_url bsctestnet
+  get_block_number bsctestnet
+  get_raw_tx bsctestnet 0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1
+}
+
 # TODO: Implement other function (these are on bsctestnet)
-# call_rpc $rpc_url "eth_getRawTransactionByHash" "0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"
 # call_rpc $rpc_url "eth_getTransactionReceipt" "0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"
 # call_rpc $rpc_url "eth_getBalance" "0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5" "latest"
