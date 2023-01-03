@@ -158,6 +158,41 @@ get_raw_tx() {
 }
 
 #######################################
+# Get transaction receipt.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+#   Hash of the transaction.
+# Outputs:
+#   Transaction receipt.
+#######################################
+get_tx_receipt() {
+   show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url> <tx_hash>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 2 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+  local tx_hash="$2"
+
+  tx_receipt=$( call_rpc $rpc_url eth_getTransactionReceipt $tx_hash )
+
+  [ ! -z "$tx_receipt" ] && echo $tx_receipt
+}
+
+#######################################
 # Get balance.
 # Arguments:
 #   Name of the chain or RPC URL of the node.
@@ -203,8 +238,6 @@ blockchain_showcase () {
   get_rpc_url bsctestnet
   get_block_number bsctestnet
   get_raw_tx bsctestnet 0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1
+  get_tx_receipt bsctestnet 0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1
   get_balance bsctestnet 0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5
 }
-
-# TODO: Implement other function (these are on bsctestnet)
-# call_rpc $rpc_url "eth_getTransactionReceipt" "0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"
