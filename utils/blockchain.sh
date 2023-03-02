@@ -3,6 +3,9 @@
 # Blockchain.
 
 # Variables
+ETH="eth"
+ETH_RPC="https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+
 AMINOX="aminox"
 AMINOX_RPC="https://aminox.node.alphacarbon.network/"
 AMINOX_TESTNET="aminoxtestnet"
@@ -14,6 +17,7 @@ BSC_TESTNET="bsctestnet"
 BSC_TESTNET_RPC="https://data-seed-prebsc-1-s1.binance.org:8545/"
 
 NODES="\
+${ETH} \
 ${AMINOX} \
 ${AMINOX_TESTNET} \
 ${BSC} \
@@ -71,13 +75,15 @@ get_rpc_url() {
 
   local rpc_url
 
-  if [[ "$1" == "$AMINOX" ]]; then
+  if [[ "$1" == "$ETH" ]]; then
+    rpc_url="$ETH_RPC"
+  elif [[ "$1" == "$AMINOX" ]]; then
     rpc_url="$AMINOX_RPC"
   elif [[ "$1" == "$AMINOX_TESTNET" ]]; then
     rpc_url="$AMINOX_TESTNET_RPC"
-   elif [[ "$1" == "$BSC" ]]; then
+  elif [[ "$1" == "$BSC" ]]; then
     rpc_url="$BSC_RPC"
-   elif [[ "$1" == "$BSC_TESTNET" ]]; then
+  elif [[ "$1" == "$BSC_TESTNET" ]]; then
     rpc_url="$BSC_TESTNET_RPC"
   else
     rpc_url="$1"
