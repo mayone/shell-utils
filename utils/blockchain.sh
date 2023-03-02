@@ -24,6 +24,16 @@ ${BSC} \
 ${BSC_TESTNET} \
 "
 
+USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
+USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
+# USDT_TRC20="TEk3tTfP3nRbXvCJ4bV4bJNVc4HsPZvJWr"
+
+# Keccak-256 encoded
+# decimals()
+DECIMALS_FUNC="0x313ce567"
+# name()
+NAME_FUNC="0x06fdde03"
+
 #######################################
 # Call Ethereum JSON-RPC.
 # Arguments:
@@ -272,6 +282,86 @@ get_balance() {
 }
 
 #######################################
+# Get name of the token.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+#   Address of the token contract.
+# Outputs:
+#   Name of the token.
+#######################################
+get_token_name() {
+   show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url> <address>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 2 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+  local address="$2"
+  local tx=$(
+    printf '{"to":"%s","data":"%s"}' \
+      "$address" \
+      "$NAME_FUNC"
+  )
+
+  name=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+
+  [ ! -z "$name" ] && echo $name | xxd -r -p
+}
+
+#######################################
+# Get decimals of the token.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+#   Address of the token contract.
+# Outputs:
+#   Decimals of the token.
+#######################################
+get_token_decimals() {
+   show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url> <address>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 2 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+  local address="$2"
+  local tx=$(
+    printf '{"to":"%s","data":"%s"}' \
+      "$address" \
+      "$DECIMALS_FUNC"
+  )
+
+  decimals=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+
+  [ ! -z "$decimals" ] && echo $((decimals))
+}
+
+#######################################
 # Showcase of the functions.
 # Arguments:
 #   None
@@ -285,10 +375,18 @@ blockchain_showcase () {
   get_block_number bsctestnet
   echo "get_latest_block"
   get_latest_block bsctestnet
+
   echo "get_raw_tx"
   get_raw_tx bsctestnet '"0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"'
   echo "get_tx_receipt"
   get_tx_receipt bsctestnet '"0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"'
+
   echo "get_balance"
   get_balance bsctestnet '"0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5"'
+
+  echo "get_token_name"
+  get_token_name eth $USDT_ERC20
+  echo ""
+  echo "get_token_decimals"
+  get_token_decimals eth $USDT_ERC20
 }
