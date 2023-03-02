@@ -318,7 +318,7 @@ get_token_name() {
 
   name=$( call_rpc $rpc_url eth_call $tx '"latest"' )
 
-  [ ! -z "$name" ] && echo $name | xxd -r -p
+  [ ! -z "$name" ] && echo -n $name | xxd -r -p
 }
 
 #######################################
@@ -362,6 +362,54 @@ get_token_decimals() {
 }
 
 #######################################
+# Get health of blockchain by checking ts.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+# Outputs:
+#   0 if is healthy, 1 if is sick, 2 if is dead.
+#######################################
+readonly HEALTHY=0
+readonly SICK=1
+readonly DEAD=2
+# Tolerance in seconds
+readonly TOLERANCE=60
+
+get_chain_health() {
+   show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 1 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+
+  block=$( call_rpc $rpc_url eth_getBlockByNumber '"latest"' true )
+
+  [ -z "$block" ] && echo $DEAD
+
+  block_ts=$( echo $block | jq -r '.timestamp' )
+  now_ts=$( date +%s )
+
+  if [ $(($now_ts - $block_ts)) -gt $TOLERANCE ]; then
+    echo $SICK
+  else
+    echo $HEALTHY
+  fi
+}
+
+#######################################
 # Showcase of the functions.
 # Arguments:
 #   None
@@ -389,4 +437,15 @@ blockchain_showcase () {
   echo ""
   echo "get_token_decimals"
   get_token_decimals eth $USDT_ERC20
+
+  echo "get_chain_health"
+  health=$( get_chain_health eth )
+  echo -n "eth is "
+  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
+  health=$( get_chain_health bsc )
+  echo -n "bsc is "
+  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
+  health=$( get_chain_health aminox )
+  echo -n "aminox is "
+  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
 }
