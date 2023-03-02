@@ -37,8 +37,13 @@ call_rpc() {
   local method="$2"
   local params_array=("${@:3}")
   # local params=$(IFS=","; printf '%s' "$params_array"; unset IFS)
-  local params=$( printf "%s" "$params_array" | jq -sRc 'split(" ")' )
-  local data=$( printf '{"jsonrpc":"2.0","method":"%s","params":%s,"id":1}' "$method" "$params" )
+  # local params=$( printf "%s" "$params_array" | jq -sRc 'split(" ")' )
+  local params=$( printf "%s" "$params_array" | jq -sc )
+  local data=$(
+    printf '{"jsonrpc":"2.0","method":"%s","params":%s,"id":1}' \
+      "$method" \
+      "$params"
+  )
 
   result=$(
     curl --silent \
@@ -120,6 +125,39 @@ get_block_number() {
   # [ ! -z "$block_number" ] && echo $block_number
   # block number in decimal
   [ ! -z "$block_number" ] && echo $((block_number))
+}
+
+#######################################
+# Get latest block.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+# Outputs:
+#   Latest Block.
+#######################################
+get_latest_block() {
+   show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 1 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+
+  block=$( call_rpc $rpc_url eth_getBlockByNumber '"latest"' true )
+
+  [ ! -z "$block" ] && echo $block
 }
 
 #######################################
@@ -222,7 +260,7 @@ get_balance() {
   local rpc_url="$( get_rpc_url $1 )"
   local address="$2"
 
-  balance=$( call_rpc $rpc_url eth_getBalance $address latest )
+  balance=$( call_rpc $rpc_url eth_getBalance $address '"latest"' )
 
   [ ! -z "$balance" ] && echo $balance
 }
@@ -235,9 +273,16 @@ get_balance() {
 #   Showcase result.
 #######################################
 blockchain_showcase () {
+  echo "get_rpc_url"
   get_rpc_url bsctestnet
+  echo "get_block_number"
   get_block_number bsctestnet
-  get_raw_tx bsctestnet 0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1
-  get_tx_receipt bsctestnet 0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1
-  get_balance bsctestnet 0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5
+  echo "get_latest_block"
+  get_latest_block bsctestnet
+  echo "get_raw_tx"
+  get_raw_tx bsctestnet '"0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"'
+  echo "get_tx_receipt"
+  get_tx_receipt bsctestnet '"0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"'
+  echo "get_balance"
+  get_balance bsctestnet '"0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5"'
 }
