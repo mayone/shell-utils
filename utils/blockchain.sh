@@ -16,6 +16,11 @@ BSC_RPC="https://bsc-dataseed.binance.org/"
 BSC_TESTNET="bsctestnet"
 BSC_TESTNET_RPC="https://data-seed-prebsc-1-s1.binance.org:8545/"
 
+# TronGrid API URL
+# Reference: https://developers.tron.network/reference/background
+TRON_API="https://api.trongrid.io/"
+SHASTA_API="https://api.shasta.trongrid.io/"
+
 NODES="\
 ${ETH} \
 ${AMINOX} \
@@ -26,7 +31,7 @@ ${BSC_TESTNET} \
 
 USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
 USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
-# USDT_TRC20="TEk3tTfP3nRbXvCJ4bV4bJNVc4HsPZvJWr"
+# USDT_TRC20="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
 # Keccak-256 encoded
 # decimals()
