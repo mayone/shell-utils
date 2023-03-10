@@ -115,7 +115,7 @@ get_rpc_url() {
 #   Block number.
 #######################################
 get_block_number() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url>"
     echo ""
@@ -156,7 +156,7 @@ get_block_number() {
 #   Latest Block.
 #######################################
 get_latest_block() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url>"
     echo ""
@@ -190,7 +190,7 @@ get_latest_block() {
 #   Raw transaction.
 #######################################
 get_raw_tx() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url> <tx_hash>"
     echo ""
@@ -225,7 +225,7 @@ get_raw_tx() {
 #   Transaction receipt.
 #######################################
 get_tx_receipt() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url> <tx_hash>"
     echo ""
@@ -260,7 +260,7 @@ get_tx_receipt() {
 #   Balance (in hex) of the account.
 #######################################
 get_balance() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url> <address>"
     echo ""
@@ -295,7 +295,7 @@ get_balance() {
 #   Name of the token.
 #######################################
 get_token_name() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url> <address>"
     echo ""
@@ -335,7 +335,7 @@ get_token_name() {
 #   Decimals of the token.
 #######################################
 get_token_decimals() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url> <address>"
     echo ""
@@ -380,7 +380,7 @@ readonly DEAD=2
 readonly TOLERANCE=60
 
 get_chain_health() {
-   show_usage() {
+  show_usage() {
     echo "Usage:"
     echo "  $@ <node or rpc_url>"
     echo ""

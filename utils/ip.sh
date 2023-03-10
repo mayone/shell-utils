@@ -20,7 +20,7 @@ get_public_ip() {
     VER=$IPV4
   fi
   host -$VER myip.opendns.com resolver1.opendns.com \
-    | tail -1 \
+    | grep 'address' \
     | sed -e 's#.*address \(\)#\1#'
 }
 
