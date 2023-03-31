@@ -38,6 +38,8 @@ USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
 DECIMALS_FUNC="0x313ce567"
 # name()
 NAME_FUNC="0x06fdde03"
+# balanceOf(address)
+BALANCEOF_FUNC="0x70a08231"
 
 #######################################
 # Call Ethereum JSON-RPC.
@@ -367,6 +369,51 @@ get_token_decimals() {
 }
 
 #######################################
+# Get token balance.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+#   Address of the token contract.
+#   Address of the account.
+# Outputs:
+#   Token balance (in hex) of the account.
+#######################################
+get_token_balance() {
+  show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url> <token_addr> <account_addr>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 3 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+  local token_addr="$2"
+  local account_addr="$3"
+  local account_hex=$( echo $account_addr | sed -e "s/^\"//;s/\"$//" | sed -e "s/^0x//" )
+  local tx=$(
+    printf '{"to":"%s","data":"%s%024d%s"}' \
+      "$token_addr" \
+      "$BALANCEOF_FUNC" \
+      "0" \
+      "$account_hex"
+  )
+
+  balance=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+
+  [ ! -z "$balance" ] && echo $balance
+}
+
+#######################################
 # Get health of blockchain by checking ts.
 # Arguments:
 #   Name of the chain or RPC URL of the node.
@@ -442,6 +489,8 @@ blockchain_showcase () {
   echo ""
   echo "get_token_decimals"
   get_token_decimals eth $USDT_ERC20
+  echo "get_token_balance"
+  get_token_balance eth $USDT_ERC20 '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"'
 
   echo "get_chain_health"
   health=$( get_chain_health eth )
