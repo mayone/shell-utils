@@ -162,16 +162,17 @@ get_block_number() {
 }
 
 #######################################
-# Get latest block.
+# Get block.
 # Arguments:
 #   Name of the chain or RPC URL of the node.
+#   Number of the block (empty for latest block).
 # Outputs:
-#   Latest Block.
+#   Block with the specified number or latest.
 #######################################
-get_latest_block() {
+get_block() {
   show_usage() {
     echo "Usage:"
-    echo "  $@ <node or rpc_url>"
+    echo "  $@ <node or rpc_url> [block_num]"
     echo ""
     echo "Nodes:"
     for NODE in ${NODES}; do
@@ -180,7 +181,7 @@ get_latest_block() {
     echo ""
   }
 
-  if [ "$#" != 1 ]; then
+  if [ "$#" != 1 ] && [ "$#" != 2 ]; then
     # show_usage "$@"
     # echo "$funcstack"
     show_usage "$0"
@@ -188,8 +189,11 @@ get_latest_block() {
   fi
 
   local rpc_url="$( get_rpc_url $1 )"
+  local block_num="$2"
 
-  block=$( call_rpc $rpc_url eth_getBlockByNumber '"latest"' true )
+  [ ! -z "$block_num" ] && \
+    block=$( call_rpc $rpc_url eth_getBlockByNumber "$block_num" true ) || \
+    block=$( call_rpc $rpc_url eth_getBlockByNumber '"latest"' true )
 
   [ ! -z "$block" ] && echo $block
 }
@@ -484,8 +488,15 @@ blockchain_showcase () {
   get_rpc_url bsctestnet
   echo "get_block_number"
   get_block_number bsctestnet
-  echo "get_latest_block"
-  get_latest_block bsctestnet
+  echo "get_block latest"
+  get_block bsctestnet
+
+  # Case sensitive for param number on Polygon Mainnet
+  # Ex. block 46011246 on Polygon Mainnet
+  # Confirmed
+  # get_block polygon '"0x2BE136E"'
+  # Forked?
+  # get_block polygon '"0x2be136e"'
 
   echo "get_raw_tx"
   get_raw_tx bsctestnet '"0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"'
