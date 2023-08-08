@@ -16,6 +16,11 @@ BSC_RPC="https://bsc-dataseed.binance.org/"
 BSC_TESTNET="bsctestnet"
 BSC_TESTNET_RPC="https://data-seed-prebsc-1-s1.binance.org:8545/"
 
+PLY="polygon"
+PLY_RPC="https://polygon-rpc.com/"
+PLY_TESTNET="polygontestnet"
+PLY_TESTNET_RPC="https://rpc-mumbai.maticvigil.com/"
+
 # TronGrid API URL
 # Reference: https://developers.tron.network/reference/background
 TRON_API="https://api.trongrid.io/"
@@ -27,6 +32,8 @@ ${AMINOX} \
 ${AMINOX_TESTNET} \
 ${BSC} \
 ${BSC_TESTNET} \
+${PLY} \
+${PLY_TESTNET} \
 "
 
 USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
@@ -102,6 +109,10 @@ get_rpc_url() {
     rpc_url="$BSC_RPC"
   elif [[ "$1" == "$BSC_TESTNET" ]]; then
     rpc_url="$BSC_TESTNET_RPC"
+  elif [[ "$1" == "$PLY" ]]; then
+    rpc_url="$PLY_RPC"
+  elif [[ "$1" == "$PLY_TESTNET" ]]; then
+    rpc_url="$PLY_TESTNET_RPC"
   else
     rpc_url="$1"
   fi
