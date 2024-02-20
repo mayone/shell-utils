@@ -41,10 +41,12 @@ USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
 # USDT_TRC20="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
 # Keccak-256 encoded
-# decimals()
-DECIMALS_FUNC="0x313ce567"
 # name()
 NAME_FUNC="0x06fdde03"
+# symbol()
+SYMBOL_FUNC="0x95d89b41"
+# decimals()
+DECIMALS_FUNC="0x313ce567"
 # balanceOf(address)
 BALANCEOF_FUNC="0x70a08231"
 
@@ -344,6 +346,46 @@ get_token_name() {
 }
 
 #######################################
+# Get symbol of the token.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+#   Address of the token contract.
+# Outputs:
+#   Symbol of the token.
+#######################################
+get_token_symbol() {
+  show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url> <address>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 2 ]; then
+    # show_usage "$@"
+    # echo "$funcstack"
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+  local address="$2"
+  local tx=$(
+    printf '{"to":"%s","data":"%s"}' \
+      "$address" \
+      "$SYMBOL_FUNC"
+  )
+
+  symbol=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+
+  [ ! -z "$symbol" ] && echo -n $symbol | xxd -r -p
+}
+
+#######################################
 # Get decimals of the token.
 # Arguments:
 #   Name of the chain or RPC URL of the node.
@@ -508,6 +550,9 @@ blockchain_showcase () {
 
   echo "get_token_name"
   get_token_name eth $USDT_ERC20
+  echo ""
+  echo "get_token_symbol"
+  get_token_symbol eth $USDT_ERC20
   echo ""
   echo "get_token_decimals"
   get_token_decimals eth $USDT_ERC20
