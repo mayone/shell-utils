@@ -7,12 +7,14 @@ DOWNLOAD="dl"
 EXTRACT="ext"
 MERGE="mrg"
 REVERSE="rev"
+MPEG="mpeg"
 
 CMDS="\
 ${DOWNLOAD} \
 ${EXTRACT} \
 ${MERGE} \
 ${REVERSE} \
+${MPEG} \
 "
 
 main() {
@@ -25,6 +27,8 @@ main() {
     merge "${@:2}"
   elif [ "$CMD" == "$REVERSE" ]; then
     reverse "${@:2}"
+  elif [ "$CMD" == "$MPEG" ]; then
+    mpeg_audio_convert "${@:2}"
   else
     show_usage "$@"
   fi
@@ -118,6 +122,25 @@ reverse() {
   OUT_V="$2"
 
   ffmpeg -i "$IN_V" -vf reverse "$OUT_V"
+}
+
+#######################################
+# m4a to mp3.
+# Arguments:
+#   Input audio file path.
+#   Output audio file path.
+# Returns:
+#######################################
+mpeg_audio_convert() {
+  if [[ "$#" != 2 ]]; then
+    echo "$MPEG <IN> <OUT>        m4a to mp3."
+    return
+  fi
+
+  IN_A="$1"
+  OUT_A="$2"
+
+  ffmpeg -i "$IN_A" -c:v copy -c:a libmp3lame -q:a 4 "$OUT_A"
 }
 
 main "$@"
