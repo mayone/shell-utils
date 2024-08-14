@@ -2,6 +2,10 @@
 #
 # Wrapper for ffmpeg.
 
+PSEUDO_ORG=https://sudo-flix.lol
+WIN7_CHROME_UA="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36"
+WIN10_EDGE_UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
+
 # Commands
 DOWNLOAD="dl"
 EXTRACT="ext"
@@ -58,7 +62,10 @@ download() {
   M3U8_LINK="$1"
   OUT_V="$2"
 
-  ffmpeg -i "$M3U8_LINK" -c copy "$OUT_V"
+  ffmpeg \
+    -headers "Origin: ${PSEUDO_ORG}" \
+    -i "$M3U8_LINK" \
+    -c copy "$OUT_V"
 }
 
 #######################################
