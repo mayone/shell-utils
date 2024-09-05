@@ -3,8 +3,11 @@
 # Blockchain.
 
 # Variables
+INFURA_KEY="b6bf7d3508c941499b10025c0776eaf8"
 ETH="eth"
-ETH_RPC="https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+ETH_RPC="https://mainnet.infura.io/v3/${INFURA_KEY}"
+SEPOLIA="sepolia"
+SEPOLIA_RPC="https://sepolia.infura.io/v3/${INFURA_KEY}"
 
 AMINOX="aminox"
 AMINOX_RPC="https://aminox.node.alphacarbon.network/"
@@ -21,24 +24,27 @@ PLY_RPC="https://polygon-rpc.com/"
 PLY_TESTNET="polygontestnet"
 PLY_TESTNET_RPC="https://rpc-mumbai.maticvigil.com/"
 
-# TronGrid API URL
-# Reference: https://developers.tron.network/reference/background
-TRON_API="https://api.trongrid.io/"
-SHASTA_API="https://api.shasta.trongrid.io/"
+TRON="tron"
+TRON_RPC="https://api.trongrid.io/jsonrpc"
+SHASTA="shasta"
+SHASTA_RPC="https://api.shasta.trongrid.io/jsonrpc"
 
 NODES="\
 ${ETH} \
+${SEPOLIA} \
 ${AMINOX} \
 ${AMINOX_TESTNET} \
 ${BSC} \
 ${BSC_TESTNET} \
 ${PLY} \
 ${PLY_TESTNET} \
+${TRON} \
+${SHASTA} \
 "
 
 USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
 USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
-# USDT_TRC20="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+USDT_TRC20="0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C"
 
 # Keccak-256 encoded
 # name()
@@ -103,6 +109,8 @@ get_rpc_url() {
 
   if [[ "$1" == "$ETH" ]]; then
     rpc_url="$ETH_RPC"
+  elif [[ "$1" == "$SEPOLIA" ]]; then
+    rpc_url="$SEPOLIA_RPC"
   elif [[ "$1" == "$AMINOX" ]]; then
     rpc_url="$AMINOX_RPC"
   elif [[ "$1" == "$AMINOX_TESTNET" ]]; then
@@ -115,6 +123,10 @@ get_rpc_url() {
     rpc_url="$PLY_RPC"
   elif [[ "$1" == "$PLY_TESTNET" ]]; then
     rpc_url="$PLY_TESTNET_RPC"
+  elif [[ "$1" == "$TRON" ]]; then
+    rpc_url="$TRON_RPC"
+  elif [[ "$1" == "$SHASTA" ]]; then
+    rpc_url="$SHASTA_RPC"
   else
     rpc_url="$1"
   fi
@@ -568,5 +580,8 @@ blockchain_showcase () {
   [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
   health=$( get_chain_health aminox )
   echo -n "aminox is "
+  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
+  health=$( get_chain_health tron )
+  echo -n "tron is "
   [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
 }
