@@ -22,7 +22,7 @@ BSC_TESTNET_RPC="https://data-seed-prebsc-1-s1.binance.org:8545/"
 PLY="polygon"
 PLY_RPC="https://polygon-rpc.com/"
 PLY_TESTNET="polygontestnet"
-PLY_TESTNET_RPC="https://rpc-mumbai.maticvigil.com/"
+PLY_TESTNET_RPC="https://rpc-amoy.polygon.technology"
 
 TRON="tron"
 TRON_RPC="https://api.trongrid.io/jsonrpc"
