@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Wrapper for ffmpeg.
 
@@ -11,6 +11,7 @@ DOWNLOAD="dl"
 EXTRACT="ext"
 MERGE="mrg"
 REVERSE="rev"
+CONCAT="con"
 MPEG="mpeg"
 
 CMDS="\
@@ -18,6 +19,7 @@ ${DOWNLOAD} \
 ${EXTRACT} \
 ${MERGE} \
 ${REVERSE} \
+${CONCAT} \
 ${MPEG} \
 "
 
@@ -31,6 +33,8 @@ main() {
     merge "${@:2}"
   elif [ "$CMD" == "$REVERSE" ]; then
     reverse "${@:2}"
+  elif [ "$CMD" == "$CONCAT" ]; then
+    concat "${@:2}"
   elif [ "$CMD" == "$MPEG" ]; then
     mpeg_audio_convert "${@:2}"
   else
@@ -129,6 +133,28 @@ reverse() {
   OUT_V="$2"
 
   ffmpeg -i "$IN_V" -vf reverse "$OUT_V"
+}
+
+#######################################
+# Concat videos.
+# Arguments:
+#   Input video folder.
+#   Output video file path.
+# Returns:
+#######################################
+concat() {
+  if [[ "$#" != 2 ]]; then
+    echo "$CONCAT <IN_FOLDER> <OUT_V>        Concat videos."
+    return
+  fi
+
+  IN_FOLDER="$1"
+  OUT_V="$2"
+
+  # -safe 0: allow the use of special characters in the input file list
+  # -i: input file list
+  # -c copy: copy the input streams to the output file without re-encoding
+  ffmpeg -f concat -safe 0 -i <(for f in "$IN_FOLDER"/*.mp4; do printf "file '$f'\n"; done) -c copy "$OUT_V"
 }
 
 #######################################
