@@ -3,7 +3,7 @@
 # Blockchain.
 
 # Variables
-INFURA_KEY="b6bf7d3508c941499b10025c0776eaf8"
+INFURA_KEY="de6e66cb509c43e0897d062c93f15d9e"
 ETH="eth"
 ETH_RPC="https://mainnet.infura.io/v3/${INFURA_KEY}"
 SEPOLIA="sepolia"
