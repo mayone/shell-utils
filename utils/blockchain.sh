@@ -29,6 +29,9 @@ TRON_RPC="https://api.trongrid.io/jsonrpc"
 SHASTA="shasta"
 SHASTA_RPC="https://api.shasta.trongrid.io/jsonrpc"
 
+SOLANA="solana"
+SOLANA_RPC="https://api.mainnet-beta.solana.com"
+
 NODES="\
 ${ETH} \
 ${SEPOLIA} \
@@ -45,6 +48,7 @@ ${SHASTA} \
 USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
 USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
 USDT_TRC20="0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C"
+USDT_SOLANA="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 
 # Keccak-256 encoded
 # name()
@@ -127,6 +131,8 @@ get_rpc_url() {
     rpc_url="$TRON_RPC"
   elif [[ "$1" == "$SHASTA" ]]; then
     rpc_url="$SHASTA_RPC"
+  elif [[ "$1" == "$SOLANA" ]]; then
+    rpc_url="$SOLANA_RPC"
   else
     rpc_url="$1"
   fi
@@ -426,13 +432,25 @@ get_token_decimals() {
 
   local rpc_url="$( get_rpc_url $1 )"
   local address="$2"
-  local tx=$(
-    printf '{"to":"%s","data":"%s"}' \
-      "$address" \
-      "$DECIMALS_FUNC"
-  )
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    local tx=$(
+      printf '"%s"' \
+        "$address"
+    )
+  else
+    local tx=$(
+      printf '{"to":"%s","data":"%s"}' \
+        "$address" \
+        "$DECIMALS_FUNC"
+    )
+  fi
 
-  decimals=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    result=$( call_rpc $rpc_url getTokenSupply $tx )
+    decimals=$( echo $result | jq -r '.value.decimals' )
+  else
+    decimals=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+  fi
 
   [ ! -z "$decimals" ] && echo $((decimals))
 }
@@ -568,6 +586,7 @@ blockchain_showcase () {
   echo ""
   echo "get_token_decimals"
   get_token_decimals eth $USDT_ERC20
+  get_token_decimals solana $USDT_SOLANA
   echo "get_token_balance"
   get_token_balance eth $USDT_ERC20 '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"'
 
