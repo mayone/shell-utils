@@ -9,11 +9,6 @@ ETH_RPC="https://mainnet.infura.io/v3/${INFURA_KEY}"
 SEPOLIA="sepolia"
 SEPOLIA_RPC="https://sepolia.infura.io/v3/${INFURA_KEY}"
 
-AMINOX="aminox"
-AMINOX_RPC="https://aminox.node.alphacarbon.network/"
-AMINOX_TESTNET="aminoxtestnet"
-AMINOX_TESTNET_RPC="https://aminoxtestnet.node.alphacarbon.network/"
-
 BSC="bsc"
 BSC_RPC="https://bsc-dataseed.binance.org/"
 BSC_TESTNET="bsctestnet"
@@ -23,6 +18,11 @@ PLY="polygon"
 PLY_RPC="https://polygon-rpc.com/"
 PLY_TESTNET="polygontestnet"
 PLY_TESTNET_RPC="https://rpc-amoy.polygon.technology"
+
+AMINOX="aminox"
+AMINOX_RPC="https://aminox.node.alphacarbon.network/"
+AMINOX_TESTNET="aminoxtestnet"
+AMINOX_TESTNET_RPC="https://aminoxtestnet.node.alphacarbon.network/"
 
 TRON="tron"
 TRON_RPC="https://api.trongrid.io/jsonrpc"
@@ -35,14 +35,15 @@ SOLANA_RPC="https://api.mainnet-beta.solana.com"
 NODES="\
 ${ETH} \
 ${SEPOLIA} \
-${AMINOX} \
-${AMINOX_TESTNET} \
 ${BSC} \
 ${BSC_TESTNET} \
 ${PLY} \
 ${PLY_TESTNET} \
+${AMINOX} \
+${AMINOX_TESTNET} \
 ${TRON} \
 ${SHASTA} \
+${SOLANA} \
 "
 
 USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
@@ -173,7 +174,11 @@ get_block_number() {
   #   cast block-number --rpc-url $rpc_url
   # )
 
-  block_number=$( call_rpc $rpc_url eth_blockNumber )
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    block_number=$( call_rpc $rpc_url getSlot $tx )
+  else
+    block_number=$( call_rpc $rpc_url eth_blockNumber )
+  fi
 
   # block number in hexadecimal
   # [ ! -z "$block_number" ] && echo $block_number
@@ -248,6 +253,7 @@ get_raw_tx() {
   local rpc_url="$( get_rpc_url $1 )"
   local tx_hash="$2"
 
+  # eth_getRawTransactionByHash is not supported by Infura
   raw_tx=$( call_rpc $rpc_url eth_getRawTransactionByHash $tx_hash )
 
   [ ! -z "$raw_tx" ] && echo $raw_tx
