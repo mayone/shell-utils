@@ -10,19 +10,19 @@ SEPOLIA="sepolia"
 SEPOLIA_RPC="https://sepolia.infura.io/v3/${INFURA_KEY}"
 
 BSC="bsc"
-BSC_RPC="https://bsc-dataseed.binance.org/"
+BSC_RPC="https://bsc-dataseed.binance.org"
 BSC_TESTNET="bsctestnet"
-BSC_TESTNET_RPC="https://data-seed-prebsc-1-s1.binance.org:8545/"
+BSC_TESTNET_RPC="https://data-seed-prebsc-1-s1.binance.org:8545"
 
 PLY="polygon"
-PLY_RPC="https://polygon-rpc.com/"
+PLY_RPC="https://polygon-rpc.com"
 PLY_TESTNET="polygontestnet"
 PLY_TESTNET_RPC="https://rpc-amoy.polygon.technology"
 
 AMINOX="aminox"
-AMINOX_RPC="https://aminox.node.alphacarbon.network/"
+AMINOX_RPC="https://aminox.node.alphacarbon.network"
 AMINOX_TESTNET="aminoxtestnet"
-AMINOX_TESTNET_RPC="https://aminoxtestnet.node.alphacarbon.network/"
+AMINOX_TESTNET_RPC="https://aminoxtestnet.node.alphacarbon.network"
 
 TRON="tron"
 TRON_RPC="https://api.trongrid.io/jsonrpc"
@@ -76,10 +76,11 @@ call_rpc() {
   fi
   local rpc_url="$1"
   local method="$2"
-  local params_array=("${@:3}")
+  # Note: cannot form params_array when sourcing from other file
+  # local params_array=( "${@:3}" )
   # local params=$(IFS=","; printf '%s' "$params_array"; unset IFS)
   # local params=$( printf "%s" "$params_array" | jq -sRc 'split(" ")' )
-  local params=$( printf "%s" "$params_array" | jq -sc )
+  local params=$( printf "%s" "${@:3}" | jq -sc )
   local data=$(
     printf '{"jsonrpc":"2.0","method":"%s","params":%s,"id":1}' \
       "$method" \
