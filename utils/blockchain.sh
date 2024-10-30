@@ -48,8 +48,10 @@ ${SOLANA} \
 
 USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
 USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
+USDT_POLYGON="0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
+USDT_AMINOX="0xFFfffffF8d2EE523a2206206994597c13D831EC7"
 USDT_TRC20="0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C"
-USDT_SOLANA="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+USDT_SOLANA="Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
 
 # Keccak-256 encoded
 # name()
@@ -171,20 +173,20 @@ get_block_number() {
   local rpc_url="$( get_rpc_url $1 )"
 
   # https://github.com/foundry-rs/foundry is required for cast
-  # block_number=$(
+  # block_num=$(
   #   cast block-number --rpc-url $rpc_url
   # )
 
   if [[ $rpc_url == "$SOLANA_RPC" ]]; then
-    block_number=$( call_rpc $rpc_url getSlot $tx )
+    block_num=$( call_rpc $rpc_url getSlot $tx )
   else
-    block_number=$( call_rpc $rpc_url eth_blockNumber )
+    block_num=$( call_rpc $rpc_url eth_blockNumber )
   fi
 
   # block number in hexadecimal
-  # [ ! -z "$block_number" ] && echo $block_number
+  # [ ! -z "$block_num" ] && echo $block_num
   # block number in decimal
-  [ ! -z "$block_number" ] && echo $((block_number))
+  [ ! -z "$block_num" ] && echo $((block_num))
 }
 
 #######################################
@@ -325,7 +327,11 @@ get_balance() {
   local rpc_url="$( get_rpc_url $1 )"
   local address="$2"
 
-  balance=$( call_rpc $rpc_url eth_getBalance $address '"latest"' )
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    balance=$( call_rpc $rpc_url getBalance $address | jq -r '.value' )
+  else
+    balance=$( call_rpc $rpc_url eth_getBalance $address '"latest"' )
+  fi
 
   [ ! -z "$balance" ] && echo $balance
 }
@@ -453,8 +459,7 @@ get_token_decimals() {
   fi
 
   if [[ $rpc_url == "$SOLANA_RPC" ]]; then
-    result=$( call_rpc $rpc_url getTokenSupply $tx )
-    decimals=$( echo $result | jq -r '.value.decimals' )
+    decimals=$( call_rpc $rpc_url getTokenSupply $tx | jq -r '.value.decimals' )
   else
     decimals=$( call_rpc $rpc_url eth_call $tx '"latest"' )
   fi
@@ -494,15 +499,27 @@ get_token_balance() {
   local token_addr="$2"
   local account_addr="$3"
   local account_hex=$( echo $account_addr | sed -e "s/^\"//;s/\"$//" | sed -e "s/^0x//" )
-  local tx=$(
-    printf '{"to":"%s","data":"%s%024d%s"}' \
+  
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    local tx=$(
+      printf '{"mint":"%s"}' \
+        "$token_addr"
+    )
+  else
+    local tx=$(
+      printf '{"to":"%s","data":"%s%024d%s"}' \
       "$token_addr" \
       "$BALANCEOF_FUNC" \
       "0" \
       "$account_hex"
-  )
+    )
+  fi
 
-  balance=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    balance=$( call_rpc $rpc_url getTokenAccountsByOwner $account_addr $tx '{"encoding":"jsonParsed"}' | jq -r '.value[0].account.data.parsed.info.tokenAmount.amount' )
+  else
+    balance=$( call_rpc $rpc_url eth_call $tx '"latest"' )
+  fi
 
   [ ! -z "$balance" ] && echo $balance
 }
@@ -541,11 +558,15 @@ get_chain_health() {
 
   local rpc_url="$( get_rpc_url $1 )"
 
-  block=$( call_rpc $rpc_url eth_getBlockByNumber '"latest"' true )
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    block_num=$( call_rpc $rpc_url getSlot )
+    block_ts=$( call_rpc $rpc_url getBlockTime $block_num )
+  else
+    block=$( call_rpc $rpc_url eth_getBlockByNumber '"latest"' true )
+    [ -z "$block" ] && echo $DEAD
+    block_ts=$( echo $block | jq -r '.timestamp' )
+  fi
 
-  [ -z "$block" ] && echo $DEAD
-
-  block_ts=$( echo $block | jq -r '.timestamp' )
   now_ts=$( date +%s )
 
   if [ $(($now_ts - $block_ts)) -gt $TOLERANCE ]; then

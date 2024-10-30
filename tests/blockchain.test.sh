@@ -24,6 +24,15 @@ test_get_block_number() {
   echo "get_block_number solana -> $(get_block_number solana)"
 }
 
+test_get_block() {
+  echo "get_block eth -> $(get_block eth)"
+  echo "get_block bsc -> $(get_block bsc)"
+  echo "get_block polygon -> $(get_block polygon)"
+  echo "get_block aminox -> $(get_block aminox)"
+  echo "get_block tron -> $(get_block tron)"
+  echo "get_block solana -> $(get_block solana)"
+}
+
 test_get_raw_tx() {
   # echo "get_raw_tx eth -> $(get_raw_tx eth '"0xc587f45b2bb9311f9b70dc552f962e7d8f9bd4261c077be4580a52897a80da54"')"
   echo "get_raw_tx bsc -> $(get_raw_tx bsc '"0x891481eb65e5bc52434cb002719c07a3c9b7ed810ffac38f208ea3ddff21b825"')"
@@ -42,24 +51,56 @@ test_get_tx_receipt() {
   # echo "get_tx_receipt solana -> $(get_tx_receipt solana '"4Ti2MeAp4r7ZyNEWVAgH4jDHGFBbWEY5fLKoAoPXUjM3QMXdUUHakWh4RqJCChsf38Szw2orFfnBbu93Cr1iQFhL"')"
 }
 
-# TODO: Finish this test case
 test_get_balance() {
-  echo "get_balance eth -> $(get_balance eth '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"')"
-  echo "get_balance bsc -> $(get_balance bsc '"0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5"')"
-  echo "get_balance polygon -> $(get_balance polygon '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"')"
-  echo "get_balance aminox -> $(get_balance aminox '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"')"
-  echo "get_balance tron -> $(get_balance tron '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"')"
-  echo "get_balance solana -> $(get_balance solana '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"')"
+  echo "get_balance eth -> $(get_balance eth '"0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97"')"
+  echo "get_balance bsc -> $(get_balance bsc '"0x8894E0a0c962CB723c1976a4421c95949bE2D4E3"')"
+  echo "get_balance polygon -> $(get_balance polygon '"0x0000000000000000000000000000000000001010"')"
+  echo "get_balance aminox -> $(get_balance aminox '"0xD401feCdC49f73be8cEF1ecaa6428f93F821fdC7"')"
+  echo "get_balance tron -> $(get_balance tron '"0x2C7C9963111905D29EB8DA37D28B0F53A7BB5C28"')"
+  echo "get_balance solana -> $(get_balance solana '"Fd7btgySsrjuo25CJCj7oE7VPMyezDhnx7pZkj2v69Nk"')"
 }
 
-# TODO: Fix this test case
+# TODO: Handle solana
+test_get_token_name() {
+  echo "get_token_name eth -> $(get_token_name eth $USDT_ERC20)"
+  echo "get_token_name bsc -> $(get_token_name bsc $USDT_BEP20)"
+  echo "get_token_name polygon -> $(get_token_name polygon $USDT_POLYGON)"
+  echo "get_token_name aminox -> $(get_token_name aminox $USDT_AMINOX)"
+  echo "get_token_name tron -> $(get_token_name tron $USDT_TRC20)"
+  # echo "get_token_name solana -> $(get_token_name solana $USDT_SOLANA)"
+}
+
+test_get_token_decimals() {
+  echo "get_token_decimals eth -> $(get_token_decimals eth $USDT_ERC20)"
+  echo "get_token_decimals bsc -> $(get_token_decimals bsc $USDT_BEP20)"
+  echo "get_token_decimals polygon -> $(get_token_decimals polygon $USDT_POLYGON)"
+  echo "get_token_decimals aminox -> $(get_token_decimals aminox $USDT_AMINOX)"
+  echo "get_token_decimals tron -> $(get_token_decimals tron $USDT_TRC20)"
+  echo "get_token_decimals solana -> $(get_token_decimals solana $USDT_SOLANA)"
+}
+
+test_get_token_balance() {
+  echo "get_token_balance eth -> $(get_token_balance eth $USDT_ERC20 '"0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97"')"
+  echo "get_token_balance bsc -> $(get_token_balance bsc $USDT_BEP20 '"0x8894E0a0c962CB723c1976a4421c95949bE2D4E3"')"
+  echo "get_token_balance polygon -> $(get_token_balance polygon $USDT_POLYGON '"0x0000000000000000000000000000000000001010"')"
+  echo "get_token_balance aminox -> $(get_token_balance aminox $USDT_AMINOX '"0xD401feCdC49f73be8cEF1ecaa6428f93F821fdC7"')"
+  echo "get_token_balance tron -> $(get_token_balance tron $USDT_TRC20 '"0x2C7C9963111905D29EB8DA37D28B0F53A7BB5C28"')"
+  echo "get_token_balance solana -> $(get_token_balance solana $USDT_SOLANA '"AhhoxZDmsg2snm85vPjqzYzEYESoKfb4KmTj4HrBBNwY"')"
+}
+
 test_get_chain_health() {
-  echo "get_chain_health eth -> $(get_chain_health eth)"
-  echo "get_chain_health bsc -> $(get_chain_health bsc)"
-  echo "get_chain_health polygon -> $(get_chain_health polygon)"
-  echo "get_chain_health aminox -> $(get_chain_health aminox)"
-  echo "get_chain_health tron -> $(get_chain_health tron)"
-  echo "get_chain_health solana -> $(get_chain_health solana)"
+  health=$( get_chain_health eth )
+  echo "get_chain_health eth -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health=$( get_chain_health bsc )
+  echo "get_chain_health bsc -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health=$( get_chain_health polygon )
+  echo "get_chain_health polygon -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health=$( get_chain_health aminox )
+  echo "get_chain_health aminox -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health=$( get_chain_health tron )
+  echo "get_chain_health tron -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health=$( get_chain_health solana )
+  echo "get_chain_health solana -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
 }
 
 main() {
@@ -68,6 +109,9 @@ main() {
   echo ""
   echo "Test cases of get_block_number"
   test_get_block_number
+  # echo ""
+  # echo "Test cases of get_block"
+  # test_get_block
   echo ""
   echo "Test cases of get_raw_tx"
   test_get_raw_tx
@@ -75,11 +119,20 @@ main() {
   echo "Test cases of get_tx_receipt"
   test_get_tx_receipt
   echo ""
-  # echo "Test cases of get_balance"
-  # test_get_balance
-  # echo ""
-  # echo "Test cases of get_chain_health"
-  # test_get_chain_health
+  echo "Test cases of get_balance"
+  test_get_balance
+  echo ""
+  echo "Test cases of get_token_name"
+  test_get_token_name
+  echo ""
+  echo "Test cases of get_token_decimals"
+  test_get_token_decimals
+  echo ""
+  echo "Test cases of get_token_balance"
+  test_get_token_balance
+  echo ""
+  echo "Test cases of get_chain_health"
+  test_get_chain_health
 }
 
 main
