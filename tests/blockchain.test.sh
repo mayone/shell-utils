@@ -106,30 +106,38 @@ test_get_chain_health() {
 main() {
   echo "Test cases of get_rpc_url"
   test_get_rpc_url
+
   echo ""
   echo "Test cases of get_block_number"
   test_get_block_number
+
   # echo ""
   # echo "Test cases of get_block"
   # test_get_block
   echo ""
   echo "Test cases of get_raw_tx"
   test_get_raw_tx
+
   echo ""
   echo "Test cases of get_tx_receipt"
   test_get_tx_receipt
+
   echo ""
   echo "Test cases of get_balance"
   test_get_balance
+
   echo ""
   echo "Test cases of get_token_name"
   test_get_token_name
+
   echo ""
   echo "Test cases of get_token_decimals"
   test_get_token_decimals
+
   echo ""
   echo "Test cases of get_token_balance"
   test_get_token_balance
+
   echo ""
   echo "Test cases of get_chain_health"
   test_get_chain_health

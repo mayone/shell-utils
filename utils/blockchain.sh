@@ -89,6 +89,14 @@ call_rpc() {
       "$params"
   )
 
+  if [ "$DEBUG" = true ]; then
+    YELLOW='\033[0;33m'
+    NC='\033[0m'
+    >&2 printf "${YELLOW}curl -s -X POST %s -H 'Content-Type: application/json' -d '%s' | jq -r\n${NC}" \
+      "$rpc_url" \
+      "$data"
+  fi
+
   result=$(
     curl --silent \
       -X POST \
