@@ -306,6 +306,43 @@ get_tx_receipt() {
 }
 
 #######################################
+# Get transaction.
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+#   Hash of the transaction.
+# Outputs:
+#   Transaction.
+#######################################
+get_tx() {
+  show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url> <tx_hash>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 2 ]; then
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+  local tx_hash="$2"
+
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    tx=$( call_rpc $rpc_url getTransaction $tx_hash '{"encoding":"jsonParsed","maxSupportedTransactionVersion":1}' )
+  else
+    tx=$( call_rpc $rpc_url eth_getTransactionByHash $tx_hash )
+  fi
+
+  [ ! -z "$tx" ] && echo $tx
+}
+
+#######################################
 # Get balance.
 # Arguments:
 #   Name of the chain or RPC URL of the node.
@@ -592,51 +629,11 @@ get_chain_health() {
 #   Showcase result.
 #######################################
 blockchain_showcase () {
-  echo "get_rpc_url"
-  get_rpc_url bsctestnet
-  echo "get_block_number"
-  get_block_number bsctestnet
-  echo "get_block latest"
-  get_block bsctestnet
-
   # Case sensitive for param number on Polygon Mainnet
   # Ex. block 46011246 on Polygon Mainnet
   # Confirmed
   # get_block polygon '"0x2BE136E"'
   # Forked?
   # get_block polygon '"0x2be136e"'
-
-  echo "get_raw_tx"
-  get_raw_tx bsctestnet '"0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"'
-  echo "get_tx_receipt"
-  get_tx_receipt bsctestnet '"0xd7065c84e3c1e4b514054d6bf49451fb4ff956b9062965ec656a7ee75f6d33b1"'
-
-  echo "get_balance"
-  get_balance bsctestnet '"0x980A75eCd1309eA12fa2ED87A8744fBfc9b863D5"'
-
-  echo "get_token_name"
-  get_token_name eth $USDT_ERC20
-  echo ""
-  echo "get_token_symbol"
-  get_token_symbol eth $USDT_ERC20
-  echo ""
-  echo "get_token_decimals"
-  get_token_decimals eth $USDT_ERC20
-  get_token_decimals solana $USDT_SOLANA
-  echo "get_token_balance"
-  get_token_balance eth $USDT_ERC20 '"0x36928500Bc1dCd7af6a2B4008875CC336b927D57"'
-
-  echo "get_chain_health"
-  health=$( get_chain_health eth )
-  echo -n "eth is "
-  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
-  health=$( get_chain_health bsc )
-  echo -n "bsc is "
-  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
-  health=$( get_chain_health aminox )
-  echo -n "aminox is "
-  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
-  health=$( get_chain_health tron )
-  echo -n "tron is "
-  [[ $health == $HEALTHY ]] && echo "healthy" || echo "sick or dead"
+  return
 }

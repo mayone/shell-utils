@@ -51,6 +51,15 @@ test_get_tx_receipt() {
   # echo "get_tx_receipt solana -> $(get_tx_receipt solana '"4Ti2MeAp4r7ZyNEWVAgH4jDHGFBbWEY5fLKoAoPXUjM3QMXdUUHakWh4RqJCChsf38Szw2orFfnBbu93Cr1iQFhL"')"
 }
 
+test_get_tx() {
+  echo "get_tx eth -> $(get_tx eth '"0xc587f45b2bb9311f9b70dc552f962e7d8f9bd4261c077be4580a52897a80da54"')"
+  echo "get_tx bsc -> $(get_tx bsc '"0x891481eb65e5bc52434cb002719c07a3c9b7ed810ffac38f208ea3ddff21b825"')"
+  echo "get_tx polygon -> $(get_tx polygon '"0xe51c06c9e4c97adf0b9c77f1adf91595afd1130e29c2681510c43eecbcdf8982"')"
+  echo "get_tx aminox -> $(get_tx aminox '"0x0fa10ac933b05c19a8c36b80125c84db69f8e4c674547052864f510a3158876c"')"
+  echo "get_tx tron -> $(get_tx tron '"c07224bd542478ee75a1d295af48ac7eaa1a3e603f22c7c37ae6310bde869bfb"')"
+  echo "get_tx solana -> $(get_tx solana '"4Ti2MeAp4r7ZyNEWVAgH4jDHGFBbWEY5fLKoAoPXUjM3QMXdUUHakWh4RqJCChsf38Szw2orFfnBbu93Cr1iQFhL"')"
+}
+
 test_get_balance() {
   echo "get_balance eth -> $(get_balance eth '"0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97"')"
   echo "get_balance bsc -> $(get_balance bsc '"0x8894E0a0c962CB723c1976a4421c95949bE2D4E3"')"
@@ -68,6 +77,15 @@ test_get_token_name() {
   echo "get_token_name aminox -> $(get_token_name aminox $USDT_AMINOX)"
   echo "get_token_name tron -> $(get_token_name tron $USDT_TRC20)"
   # echo "get_token_name solana -> $(get_token_name solana $USDT_SOLANA)"
+}
+
+test_get_token_symbol() {
+  echo "get_token_symbol eth -> $(get_token_symbol eth $USDT_ERC20)"
+  echo "get_token_symbol bsc -> $(get_token_symbol bsc $USDT_BEP20)"
+  echo "get_token_symbol polygon -> $(get_token_symbol polygon $USDT_POLYGON)"
+  echo "get_token_symbol aminox -> $(get_token_symbol aminox $USDT_AMINOX)"
+  echo "get_token_symbol tron -> $(get_token_symbol tron $USDT_TRC20)"
+  # echo "get_token_symbol solana -> $(get_token_symbol solana $USDT_SOLANA)"
 }
 
 test_get_token_decimals() {
@@ -90,17 +108,28 @@ test_get_token_balance() {
 
 test_get_chain_health() {
   health=$( get_chain_health eth )
-  echo "get_chain_health eth -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health_str=$([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead)
+  echo "get_chain_health eth -> $health ($health_str)"
+
   health=$( get_chain_health bsc )
-  echo "get_chain_health bsc -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health_str=$([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead)
+  echo "get_chain_health bsc -> $health ($health_str)"
+
   health=$( get_chain_health polygon )
-  echo "get_chain_health polygon -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health_str=$([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead)
+  echo "get_chain_health polygon -> $health ($health_str)"
+
   health=$( get_chain_health aminox )
-  echo "get_chain_health aminox -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health_str=$([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead)
+  echo "get_chain_health aminox -> $health ($health_str)"
+
   health=$( get_chain_health tron )
-  echo "get_chain_health tron -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health_str=$([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead)
+  echo "get_chain_health tron -> $health ($health_str)"
+
   health=$( get_chain_health solana )
-  echo "get_chain_health solana -> $health ($([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead))"
+  health_str=$([[ $health == $HEALTHY ]] && echo healthy || echo sick or dead)
+  echo "get_chain_health solana -> $health ($health_str)"
 }
 
 main() {
@@ -114,6 +143,7 @@ main() {
   # echo ""
   # echo "Test cases of get_block"
   # test_get_block
+
   echo ""
   echo "Test cases of get_raw_tx"
   test_get_raw_tx
@@ -123,12 +153,20 @@ main() {
   test_get_tx_receipt
 
   echo ""
+  echo "Test cases of get_tx"
+  test_get_tx
+
+  echo ""
   echo "Test cases of get_balance"
   test_get_balance
 
   echo ""
   echo "Test cases of get_token_name"
   test_get_token_name
+
+  echo ""
+  echo "Test cases of get_token_symbol"
+  test_get_token_symbol
 
   echo ""
   echo "Test cases of get_token_decimals"
