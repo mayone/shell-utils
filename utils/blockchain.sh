@@ -19,6 +19,11 @@ PLY_RPC="https://polygon-rpc.com"
 PLY_TESTNET="polygontestnet"
 PLY_TESTNET_RPC="https://rpc-amoy.polygon.technology"
 
+PLY_ZK="polygonzk"
+PLY_ZK_RPC="https://zkevm-rpc.com"
+PLY_ZK_TESTNET="polygonzktestnet"
+PLY_ZK_TESTNET_RPC="https://etherscan.cardona.zkevm-rpc.com"
+
 AMINOX="aminox"
 AMINOX_RPC="https://aminox.node.alphacarbon.network"
 AMINOX_TESTNET="aminoxtestnet"
@@ -39,6 +44,8 @@ ${BSC} \
 ${BSC_TESTNET} \
 ${PLY} \
 ${PLY_TESTNET} \
+${PLY_ZK} \
+${PLY_ZK_TESTNET} \
 ${AMINOX} \
 ${AMINOX_TESTNET} \
 ${TRON} \
@@ -49,6 +56,8 @@ ${SOLANA} \
 USDT_ERC20="0xdAC17F958D2ee523a2206206994597C13D831ec7"
 USDT_BEP20="0x55d398326f99059fF775485246999027B3197955"
 USDT_POLYGON="0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
+USDT_POLYGON_ZK="0x1E4a5963aBFD975d8c9021ce480b42188849D41d"
+USDT_POLYGON_ZK_TESTNET="0xF10FA2Bee5660aBE28d18dad74387987A9538D27"
 USDT_AMINOX="0xFFfffffF8d2EE523a2206206994597c13D831EC7"
 USDT_TRC20="0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C"
 USDT_SOLANA="Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
@@ -139,6 +148,10 @@ get_rpc_url() {
     rpc_url="$PLY_RPC"
   elif [[ "$1" == "$PLY_TESTNET" ]]; then
     rpc_url="$PLY_TESTNET_RPC"
+  elif [[ "$1" == "$PLY_ZK" ]]; then
+    rpc_url="$PLY_ZK_RPC"
+  elif [[ "$1" == "$PLY_ZK_TESTNET" ]]; then
+    rpc_url="$PLY_ZK_TESTNET_RPC"
   elif [[ "$1" == "$TRON" ]]; then
     rpc_url="$TRON_RPC"
   elif [[ "$1" == "$SHASTA" ]]; then
