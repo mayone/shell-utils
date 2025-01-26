@@ -12,6 +12,7 @@ EXTRACT="ext"
 MERGE="mrg"
 REVERSE="rev"
 CONCAT="con"
+ROTATE="rot"
 MPEG="mpeg"
 
 CMDS="\
@@ -20,6 +21,7 @@ ${EXTRACT} \
 ${MERGE} \
 ${REVERSE} \
 ${CONCAT} \
+${ROTATE} \
 ${MPEG} \
 "
 
@@ -35,6 +37,8 @@ main() {
     reverse "${@:2}"
   elif [ "$CMD" == "$CONCAT" ]; then
     concat "${@:2}"
+  elif [ "$CMD" == "$ROTATE" ]; then
+    rotate "${@:2}"
   elif [ "$CMD" == "$MPEG" ]; then
     mpeg_audio_convert "${@:2}"
   else
@@ -155,6 +159,27 @@ concat() {
   # -i: input file list
   # -c copy: copy the input streams to the output file without re-encoding
   ffmpeg -f concat -safe 0 -i <(for f in "$IN_FOLDER"/*.mp4; do printf "file '$f'\n"; done) -c copy "$OUT_V"
+}
+
+#######################################
+# Rotate video (counterclockwise 90 degrees).
+# Arguments:
+#   Input video file path.
+#   Output video file path.
+# Returns:
+#######################################
+rotate() {
+  if [[ "$#" != 2 ]]; then
+    echo "$ROTATE <IN> <OUT>        Rotate video."
+    return
+  fi
+
+  IN_V="$1"
+  OUT_V="$2"
+
+  # -display_rotation 90: rotate the video 90 degrees counterclockwise
+  # -display_rotation 270: rotate the video 90 degrees clockwise
+  ffmpeg -display_rotation 270 -i "$IN_V" -c copy "$OUT_V"
 }
 
 #######################################
