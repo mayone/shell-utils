@@ -31,3 +31,7 @@ get_private_ip() {
   # Linux
   # hostname -I | grep -o '^[0-9.]*'
 }
+
+get_mac_addr() {
+  ifconfig | grep 'ether ' | awk '{print $2}'
+}
