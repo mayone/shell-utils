@@ -5,10 +5,12 @@
 # Commands
 MP4="mp4"
 M4A="m4a"
+PLAYLIST="playlist"
 
 CMDS="\
 ${MP4} \
 ${M4A} \
+${PLAYLIST} \
 "
 
 main() {
@@ -17,6 +19,8 @@ main() {
     mp4 "${@:2}"
   elif [ "$CMD" == "$M4A" ]; then
     m4a "${@:2}"
+  elif [ "$CMD" == "$PLAYLIST" ]; then
+    playlist "${@:2}"
   else
     show_usage "$@"
   fi
@@ -62,6 +66,23 @@ m4a() {
   YT_URL="$1"
 
   yt-dlp -i "$YT_URL" -f ba[ext=m4a]
+}
+
+#######################################
+# Download all videos in a YouTube playlist as mp4.
+# Arguments:
+#   Link to the YouTube playlist.
+# Returns:
+#######################################
+playlist() {
+  if [[ "$#" != 1 ]]; then
+    echo "$PLAYLIST <PLAYLIST_URL>   Download all videos in the playlist as mp4."
+    return
+  fi
+
+  PLAYLIST_URL="$1"
+
+  yt-dlp -i "$PLAYLIST_URL" -S vcodec:h264,res,acodec:m4a -o "%(playlist)s/%(title)s.%(ext)s"
 }
 
 main "$@"
