@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Setup DNS config on WSL (superuser access required).
+
+set -eo pipefail
 
 # Variables
 WSL_CONFIG="/etc/wsl.conf"

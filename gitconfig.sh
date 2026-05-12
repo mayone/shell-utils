@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Switch user of git config.
+
+set -euo pipefail
 
 GMAIL="gmail"
 INSYDE="insyde"
@@ -26,7 +28,7 @@ main() {
   fi
 
   echo "Current:"
-  git config -l | grep --color user
+  git config -l | grep --color user || true
 }
 
 set_name() {

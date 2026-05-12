@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Blockchain Test.
 SOURCE="${BASH_SOURCE[0]:-$0}"  

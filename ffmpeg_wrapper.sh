@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Wrapper for ffmpeg.
+
+set -euo pipefail
 
 PSEUDO_ORG=https://sudo-flix.lol
 WIN7_CHROME_UA="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36"
@@ -26,7 +28,7 @@ ${MPEG} \
 "
 
 main() {
-  CMD="$1"
+  CMD="${1:-}"
   if [ "$CMD" == "$DOWNLOAD" ]; then
     download "${@:2}"
   elif [ "$CMD" == "$EXTRACT" ]; then

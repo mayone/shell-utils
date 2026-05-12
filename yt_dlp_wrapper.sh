@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Wrapper for yt-dlp.
+
+set -euo pipefail
 
 # Commands
 MP4="mp4"
@@ -14,7 +16,7 @@ ${PLAYLIST} \
 "
 
 main() {
-  CMD="$1"
+  CMD="${1:-}"
   if [ "$CMD" == "$MP4" ]; then
     mp4 "${@:2}"
   elif [ "$CMD" == "$M4A" ]; then

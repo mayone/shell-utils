@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Convert PNG to macOS ICNS.
+
+set -euo pipefail
 
 show_usage() {
   echo "Usage:"
