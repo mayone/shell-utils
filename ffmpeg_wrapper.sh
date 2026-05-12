@@ -5,7 +5,10 @@
 set -euo pipefail
 
 PSEUDO_ORG=https://sudo-flix.lol
+# User-agent constants are kept for ad-hoc invocations; not referenced today.
+# shellcheck disable=SC2034
 WIN7_CHROME_UA="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36"
+# shellcheck disable=SC2034
 WIN10_EDGE_UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
 
 # Commands
@@ -160,7 +163,7 @@ concat() {
   # -safe 0: allow the use of special characters in the input file list
   # -i: input file list
   # -c copy: copy the input streams to the output file without re-encoding
-  ffmpeg -f concat -safe 0 -i <(for f in "$IN_FOLDER"/*.mp4; do printf "file '$f'\n"; done) -c copy "$OUT_V"
+  ffmpeg -f concat -safe 0 -i <(for f in "$IN_FOLDER"/*.mp4; do printf "file '%s'\n" "$f"; done) -c copy "$OUT_V"
 }
 
 #######################################

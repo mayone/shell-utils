@@ -2,6 +2,8 @@
 #
 # Display message.
 
+# Color palette exposed for sourcing scripts; not all are used in this file.
+# shellcheck disable=SC2034
 # Colors
 CLEAR='\033[2K'
 NC='\033[0m'

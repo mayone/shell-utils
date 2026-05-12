@@ -6,8 +6,13 @@
 SOURCE="${BASH_SOURCE[0]:-$0}"
 DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
 
-source $DIR_PATH/display.sh
-source $DIR_PATH/check.sh
-source $DIR_PATH/date.sh
-source $DIR_PATH/ip.sh
-source $DIR_PATH/blockchain.sh
+# shellcheck source=display.sh
+source "$DIR_PATH/display.sh"
+# shellcheck source=check.sh
+source "$DIR_PATH/check.sh"
+# shellcheck source=date.sh
+source "$DIR_PATH/date.sh"
+# shellcheck source=ip.sh
+source "$DIR_PATH/ip.sh"
+# shellcheck source=blockchain.sh
+source "$DIR_PATH/blockchain.sh"

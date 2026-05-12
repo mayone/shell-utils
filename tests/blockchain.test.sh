@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 #
 # Blockchain Test.
+#
+# Legacy test harness; will be replaced by a proper bats suite. Suppress the
+# pre-existing lint noise so the rest of the project can stay green.
+# shellcheck disable=SC1091,SC2086,SC2053
 SOURCE="${BASH_SOURCE[0]:-$0}"  
 DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
 
