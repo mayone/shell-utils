@@ -5,7 +5,7 @@ function library, for macOS / Linux / WSL.
 
 ## Layout
 
-```
+```sh
 .
 ├── utils/                 # Shared functions, sourced via utils/index.sh
 │   ├── cli.sh             # print_usage / require_args helpers
@@ -30,7 +30,6 @@ identities.
 
 ```sh
 ./gitconfig.sh gmail     # mayone <mayone321@gmail.com>
-./gitconfig.sh insyde    # wayne jeng <wayne.jeng@insyde.com>
 ./gitconfig.sh           # show the current identity
 ```
 

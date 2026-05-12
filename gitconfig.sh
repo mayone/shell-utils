@@ -22,15 +22,13 @@ print_current() {
 
 show_usage() {
   print_usage "$0" \
-    "gmail              Switch to mayone <mayone321@gmail.com>." \
-    "insyde             Switch to wayne jeng <wayne.jeng@insyde.com>."
+    "gmail              Switch to mayone <mayone321@gmail.com>."
 }
 
 main() {
   case "${1:-}" in
-    gmail)  set_user "mayone" "mayone321@gmail.com" ;;
-    insyde) set_user "wayne jeng" "wayne.jeng@insyde.com" ;;
-    *)      show_usage ;;
+    gmail) set_user "mayone" "mayone321@gmail.com" ;;
+    *)     show_usage ;;
   esac
   print_current
 }
