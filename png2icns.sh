@@ -3,47 +3,52 @@
 # Convert PNG to macOS ICNS.
 
 set -euo pipefail
+IFS=$'\n\t'
+
+SOURCE="${BASH_SOURCE[0]:-$0}"
+DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
+# shellcheck source=utils/index.sh
+source "$DIR_PATH/utils/index.sh"
+
+convert_png() {
+  require_args 1 "$#" "<png_file>             Convert PNG to macOS ICNS." || return 1
+
+  local src="$1"
+  local icon_name="${src%.*}.icns"
+  local icons_dir="tempicon.iconset"
+
+  info "Converting $src to $icon_name"
+
+  mkdir "$icons_dir"
+
+  sips -z 1024 1024 "$src" --out "$icons_dir/icon_512x512@2x.png"
+  sips -z 512  512  "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_512x512.png"
+  sips -z 512  512  "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_256x256@2x.png"
+  sips -z 256  256  "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_256x256.png"
+  sips -z 256  256  "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_128x128@2x.png"
+  sips -z 128  128  "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_128x128.png"
+  sips -z 64   64   "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_64x64.png"
+  sips -z 32   32   "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_32x32.png"
+  sips -z 32   32   "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_16x16@2x.png"
+  sips -z 16   16   "$icons_dir/icon_512x512@2x.png" --out "$icons_dir/icon_16x16.png"
+
+  iconutil -c icns "$icons_dir"
+  rm -rf "$icons_dir"
+  mv tempicon.icns "$icon_name"
+
+  ok "Created $icon_name"
+}
 
 show_usage() {
-  echo "Usage:"
-  echo "  $1 <png_file>"
-  echo ""
+  print_usage "$0" \
+    "<png_file>             Convert PNG to macOS ICNS."
 }
 
 main() {
-  if [ "$#" != 1 ]; then
-    show_usage "$0"
-    return
-  fi
-
-  SRC="$1"
-  ICON_NAME="${SRC%.*}.icns"
-  echo "Converting $1 to $ICON_NAME..."
-
-  # Create an icon directory to work in
-  ICONS_DIR="tempicon.iconset"
-  mkdir "$ICONS_DIR"
-
-  # Create all other images sizes
-  sips -z 1024 1024 "$1" --out "$ICONS_DIR/icon_512x512@2x.png"
-  sips -z 512  512  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_512x512.png"
-  sips -z 512  512  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_256x256@2x.png"
-  sips -z 256  256  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_256x256.png"
-  sips -z 256  256  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_128x128@2x.png"
-  sips -z 128  128  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_128x128.png"
-  sips -z 64   64   "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_64x64.png"
-  sips -z 32   32   "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_32x32.png"
-  sips -z 32   32   "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_16x16@2x.png"
-  sips -z 16   16   "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_16x16.png"
-
-  # Create the icns file
-  iconutil -c icns "$ICONS_DIR"
-
-  # Remove the temporary directory
-  rm -rf "$ICONS_DIR"
-
-  # Rename icns
-  mv tempicon.icns "$ICON_NAME"
+  case "${1:-}" in
+    "") show_usage; exit 1 ;;
+    *)  convert_png "$@" ;;
+  esac
 }
 
 main "$@"

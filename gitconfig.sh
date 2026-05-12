@@ -3,57 +3,36 @@
 # Switch user of git config.
 
 set -euo pipefail
+IFS=$'\n\t'
 
-GMAIL="gmail"
-INSYDE="insyde"
+SOURCE="${BASH_SOURCE[0]:-$0}"
+DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
+# shellcheck source=utils/index.sh
+source "$DIR_PATH/utils/index.sh"
 
-USERS="\
-${GMAIL} \
-${INSYDE} \
-"
+set_user() {
+  git config --global user.name "$1"
+  git config --global user.email "$2"
+}
 
-main() {
-  if [ "$#" == 1 ]; then
-    if [ "$1" == "${GMAIL}" ]; then
-      set_name "mayone"
-      set_email "mayone321@gmail.com"
-    elif [ "$1" == "${INSYDE}" ]; then
-      set_name "wayne jeng"
-      set_email "wayne.jeng@insyde.com"
-    else
-      show_usage "$@"
-    fi
-  else
-    show_usage "$@"
-  fi
-
+print_current() {
   echo "Current:"
   git config -l | grep --color user || true
 }
 
-set_name() {
-  if [ "$#" != 1 ]; then
-    return
-  fi
-  git config --global user.name "$1"
-}
-
-set_email() {
-  if [ "$#" != 1 ]; then
-    return
-  fi
-  git config --global user.email "$1"
-}
-
 show_usage() {
-  echo "Usage:"
-  echo "  $0 <user>"
-  echo ""
-  echo "Users:"
-  for USER in ${USERS}; do
-    echo "  ${USER}"
-  done
-  echo ""
+  print_usage "$0" \
+    "gmail              Switch to mayone <mayone321@gmail.com>." \
+    "insyde             Switch to wayne jeng <wayne.jeng@insyde.com>."
+}
+
+main() {
+  case "${1:-}" in
+    gmail)  set_user "mayone" "mayone321@gmail.com" ;;
+    insyde) set_user "wayne jeng" "wayne.jeng@insyde.com" ;;
+    *)      show_usage ;;
+  esac
+  print_current
 }
 
 main "$@"

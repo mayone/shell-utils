@@ -3,6 +3,12 @@
 # Wrapper for ffmpeg.
 
 set -euo pipefail
+IFS=$'\n\t'
+
+SOURCE="${BASH_SOURCE[0]:-$0}"
+DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
+# shellcheck source=utils/index.sh
+source "$DIR_PATH/utils/index.sh"
 
 PSEUDO_ORG=https://sudo-flix.lol
 # User-agent constants are kept for ad-hoc invocations; not referenced today.
@@ -11,199 +17,74 @@ WIN7_CHROME_UA="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, l
 # shellcheck disable=SC2034
 WIN10_EDGE_UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"
 
-# Commands
-DOWNLOAD="dl"
-EXTRACT="ext"
-MERGE="mrg"
-REVERSE="rev"
-CONCAT="con"
-ROTATE="rot"
-MPEG="mpeg"
+download() {
+  require_args 2 "$#" "dl <M3U8_LINK> <OUT>          Download video by the M3U8 file link." || return 1
+  ffmpeg \
+    -headers "Origin: ${PSEUDO_ORG}" \
+    -i "$1" \
+    -c copy "$2"
+}
 
-CMDS="\
-${DOWNLOAD} \
-${EXTRACT} \
-${MERGE} \
-${REVERSE} \
-${CONCAT} \
-${ROTATE} \
-${MPEG} \
-"
+extract_audio() {
+  require_args 2 "$#" "ext <IN_V> <OUT_A>            Extract audio from video." || return 1
+  # vn: drop video; acodec copy: keep original audio stream as-is.
+  ffmpeg -i "$1" -vn -acodec copy "$2"
+}
 
-main() {
-  CMD="${1:-}"
-  if [ "$CMD" == "$DOWNLOAD" ]; then
-    download "${@:2}"
-  elif [ "$CMD" == "$EXTRACT" ]; then
-    extract_audio "${@:2}"
-  elif [ "$CMD" == "$MERGE" ]; then
-    merge "${@:2}"
-  elif [ "$CMD" == "$REVERSE" ]; then
-    reverse "${@:2}"
-  elif [ "$CMD" == "$CONCAT" ]; then
-    concat "${@:2}"
-  elif [ "$CMD" == "$ROTATE" ]; then
-    rotate "${@:2}"
-  elif [ "$CMD" == "$MPEG" ]; then
-    mpeg_audio_convert "${@:2}"
-  else
-    show_usage "$@"
-  fi
+merge() {
+  require_args 3 "$#" "mrg <IN_V> <IN_A> <OUT_V>     Merge video and audio." || return 1
+  ffmpeg -i "$1" -i "$2" \
+    -c:v copy -c:a aac -strict experimental \
+    -map 0:v:0 -map 1:a:0 "$3"
+}
+
+reverse() {
+  require_args 2 "$#" "rev <IN> <OUT>                Reverse video." || return 1
+  ffmpeg -i "$1" -vf reverse "$2"
+}
+
+concat() {
+  require_args 2 "$#" "con <IN_FOLDER> <OUT_V>       Concat .mp4 files in folder." || return 1
+  # -safe 0: allow special characters in the file list.
+  # -c copy: stream copy, no re-encode.
+  ffmpeg -f concat -safe 0 \
+    -i <(for f in "$1"/*.mp4; do printf "file '%s'\n" "$f"; done) \
+    -c copy "$2"
+}
+
+rotate() {
+  require_args 2 "$#" "rot <IN> <OUT>                Rotate video 90 degrees clockwise." || return 1
+  # 270 = clockwise 90; 90 = counterclockwise 90.
+  ffmpeg -display_rotation 270 -i "$1" -c copy "$2"
+}
+
+mpeg_audio_convert() {
+  require_args 2 "$#" "mpeg <IN> <OUT>               Convert m4a audio to mp3." || return 1
+  ffmpeg -i "$1" -c:v copy -c:a libmp3lame -q:a 4 "$2"
 }
 
 show_usage() {
-  echo "Usage:"
-  for CMD in ${CMDS}; do
-    echo "  $0 ${CMD}"
-  done
-  echo ""
+  print_usage "$0" \
+    "dl <M3U8_LINK> <OUT>          Download video by the M3U8 file link." \
+    "ext <IN_V> <OUT_A>            Extract audio from video." \
+    "mrg <IN_V> <IN_A> <OUT_V>     Merge video and audio." \
+    "rev <IN> <OUT>                Reverse video." \
+    "con <IN_FOLDER> <OUT_V>       Concat .mp4 files in folder." \
+    "rot <IN> <OUT>                Rotate video 90 degrees clockwise." \
+    "mpeg <IN> <OUT>               Convert m4a audio to mp3."
 }
 
-#######################################
-# Download video by the M3U8 file link.
-# Arguments:
-#   Link to the M3U8 file.
-#   Output video file path.
-# Returns:
-#######################################
-download() {
-  if [[ "$#" != 2 ]]; then
-    echo "$DOWNLOAD <M3U8_LINK> <OUT>        Download video by the M3U8 file link."
-    return
-  fi
-
-  M3U8_LINK="$1"
-  OUT_V="$2"
-
-  ffmpeg \
-    -headers "Origin: ${PSEUDO_ORG}" \
-    -i "$M3U8_LINK" \
-    -c copy "$OUT_V"
-}
-
-#######################################
-# Extract audio from video.
-# Arguments:
-#   Input video file path.
-#   Output audio file path.
-# Returns:
-#######################################
-extract_audio() {
-  if [[ "$#" != 2 ]]; then
-    echo "$EXTRACT <IN_V> <OUT_A>        Extract audio from video."
-    return
-  fi
-
-  IN_V="$1"
-  OUT_A="$2"
-
-  # vn: no video
-  # acodec: use the same audio stream that's already in the video
-  ffmpeg -i "$IN_V" -vn -acodec copy "$OUT_A"
-}
-
-#######################################
-# Merge video and audio.
-# Arguments:
-#   Input video file path.
-#   Input audio file path.
-#   Output video file path.
-# Returns:
-#######################################
-merge() {
-  if [[ "$#" != 3 ]]; then
-    echo "$MERGE <IN_V> <IN_A> <OUT_V>        Merge video and audio."
-    return
-  fi
-
-  IN_V="$1"
-  IN_A="$2"
-  OUT_V="$3"
-
-  ffmpeg -i "$IN_V" -i "$IN_A" \
-    -c:v copy -c:a aac -strict experimental \
-    -map 0:v:0 -map 1:a:0 "$OUT_V"
-}
-
-#######################################
-# Reverse video.
-# Arguments:
-#   Input video file path.
-#   Output video file path.
-# Returns:
-#######################################
-reverse() {
-  if [[ "$#" != 2 ]]; then
-    echo "$REVERSE <IN> <OUT>        Reverse video."
-    return
-  fi
-
-  IN_V="$1"
-  OUT_V="$2"
-
-  ffmpeg -i "$IN_V" -vf reverse "$OUT_V"
-}
-
-#######################################
-# Concat videos.
-# Arguments:
-#   Input video folder.
-#   Output video file path.
-# Returns:
-#######################################
-concat() {
-  if [[ "$#" != 2 ]]; then
-    echo "$CONCAT <IN_FOLDER> <OUT_V>        Concat videos."
-    return
-  fi
-
-  IN_FOLDER="$1"
-  OUT_V="$2"
-
-  # -safe 0: allow the use of special characters in the input file list
-  # -i: input file list
-  # -c copy: copy the input streams to the output file without re-encoding
-  ffmpeg -f concat -safe 0 -i <(for f in "$IN_FOLDER"/*.mp4; do printf "file '%s'\n" "$f"; done) -c copy "$OUT_V"
-}
-
-#######################################
-# Rotate video (counterclockwise 90 degrees).
-# Arguments:
-#   Input video file path.
-#   Output video file path.
-# Returns:
-#######################################
-rotate() {
-  if [[ "$#" != 2 ]]; then
-    echo "$ROTATE <IN> <OUT>        Rotate video."
-    return
-  fi
-
-  IN_V="$1"
-  OUT_V="$2"
-
-  # -display_rotation 90: rotate the video 90 degrees counterclockwise
-  # -display_rotation 270: rotate the video 90 degrees clockwise
-  ffmpeg -display_rotation 270 -i "$IN_V" -c copy "$OUT_V"
-}
-
-#######################################
-# m4a to mp3.
-# Arguments:
-#   Input audio file path.
-#   Output audio file path.
-# Returns:
-#######################################
-mpeg_audio_convert() {
-  if [[ "$#" != 2 ]]; then
-    echo "$MPEG <IN> <OUT>        m4a to mp3."
-    return
-  fi
-
-  IN_A="$1"
-  OUT_A="$2"
-
-  ffmpeg -i "$IN_A" -c:v copy -c:a libmp3lame -q:a 4 "$OUT_A"
+main() {
+  case "${1:-}" in
+    dl)   shift; download "$@" ;;
+    ext)  shift; extract_audio "$@" ;;
+    mrg)  shift; merge "$@" ;;
+    rev)  shift; reverse "$@" ;;
+    con)  shift; concat "$@" ;;
+    rot)  shift; rotate "$@" ;;
+    mpeg) shift; mpeg_audio_convert "$@" ;;
+    *)    show_usage; exit 1 ;;
+  esac
 }
 
 main "$@"
