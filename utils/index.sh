@@ -8,6 +8,8 @@ DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
 
 # shellcheck source=display.sh
 source "$DIR_PATH/display.sh"
+# shellcheck source=cli.sh
+source "$DIR_PATH/cli.sh"
 # shellcheck source=check.sh
 source "$DIR_PATH/check.sh"
 # shellcheck source=date.sh
