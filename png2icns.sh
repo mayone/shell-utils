@@ -4,7 +4,7 @@
 
 show_usage() {
   echo "Usage:"
-  echo "  $@ <png_file>"
+  echo "  $1 <png_file>"
   echo ""
 }
 
@@ -14,19 +14,19 @@ main() {
     return
   fi
 
-  SRC=$1
+  SRC="$1"
   ICON_NAME="${SRC%.*}.icns"
   echo "Converting $1 to $ICON_NAME..."
 
   # Create an icon directory to work in
   ICONS_DIR="tempicon.iconset"
-  mkdir $ICONS_DIR
+  mkdir "$ICONS_DIR"
 
   # Create all other images sizes
-  sips -z 1024 1024 $1 --out "$ICONS_DIR/icon_512x512@2x.png"
+  sips -z 1024 1024 "$1" --out "$ICONS_DIR/icon_512x512@2x.png"
   sips -z 512  512  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_512x512.png"
   sips -z 512  512  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_256x256@2x.png"
-  sips -z 256  256  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_256x256x.png"
+  sips -z 256  256  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_256x256.png"
   sips -z 256  256  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_128x128@2x.png"
   sips -z 128  128  "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_128x128.png"
   sips -z 64   64   "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_64x64.png"
@@ -35,13 +35,13 @@ main() {
   sips -z 16   16   "$ICONS_DIR/icon_512x512@2x.png" --out "$ICONS_DIR/icon_16x16.png"
 
   # Create the icns file
-  iconutil -c icns $ICONS_DIR
+  iconutil -c icns "$ICONS_DIR"
 
   # Remove the temporary directory
-  rm -rf $ICONS_DIR
+  rm -rf "$ICONS_DIR"
 
   # Rename icns
-  mv tempicon.icns $ICON_NAME
+  mv tempicon.icns "$ICON_NAME"
 }
 
 main "$@"
