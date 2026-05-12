@@ -3,88 +3,42 @@
 # Wrapper for yt-dlp.
 
 set -euo pipefail
+IFS=$'\n\t'
 
-# Commands
-MP4="mp4"
-M4A="m4a"
-PLAYLIST="playlist"
+SOURCE="${BASH_SOURCE[0]:-$0}"
+DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
+# shellcheck source=utils/index.sh
+source "$DIR_PATH/utils/index.sh"
 
-CMDS="\
-${MP4} \
-${M4A} \
-${PLAYLIST} \
-"
+mp4() {
+  require_args 1 "$#" "mp4 <YT_URL>            Download video as mp4." || return 1
+  yt-dlp -i "$1" -S 'vcodec:h264,res,acodec:m4a'
+}
 
-main() {
-  CMD="${1:-}"
-  if [ "$CMD" == "$MP4" ]; then
-    mp4 "${@:2}"
-  elif [ "$CMD" == "$M4A" ]; then
-    m4a "${@:2}"
-  elif [ "$CMD" == "$PLAYLIST" ]; then
-    playlist "${@:2}"
-  else
-    show_usage "$@"
-  fi
+m4a() {
+  require_args 1 "$#" "m4a <YT_URL>            Download audio as m4a." || return 1
+  yt-dlp -i "$1" -f 'ba[ext=m4a]'
+}
+
+playlist() {
+  require_args 1 "$#" "playlist <PL_URL>       Download playlist as mp4." || return 1
+  yt-dlp -i "$1" -S 'vcodec:h264,res,acodec:m4a' -o '%(playlist)s/%(title)s.%(ext)s'
 }
 
 show_usage() {
-  echo "Usage:"
-  for CMD in ${CMDS}; do
-    echo "  $0 ${CMD}"
-  done
-  echo ""
+  print_usage "$0" \
+    "mp4 <YT_URL>            Download video as mp4." \
+    "m4a <YT_URL>            Download audio as m4a." \
+    "playlist <PL_URL>       Download playlist as mp4."
 }
 
-#######################################
-# Download YouTube video in mp4 format.
-# Arguments:
-#   Link to the YouTube video.
-# Returns:
-#######################################
-mp4() {
-  if [[ "$#" != 1 ]]; then
-    echo "$MP4 <YT_URL>        Download video by the YouTube link."
-    return
-  fi
-
-  YT_URL="$1"
-
-  yt-dlp -i "$YT_URL" -S vcodec:h264,res,acodec:m4a
-}
-
-#######################################
-# Download YouTube audio in m4a format.
-# Arguments:
-#   Link to the YouTube video.
-# Returns:
-#######################################
-m4a() {
-  if [[ "$#" != 1 ]]; then
-    echo "$M4A <YT_URL>        Download audio by the YouTube link."
-    return
-  fi
-
-  YT_URL="$1"
-
-  yt-dlp -i "$YT_URL" -f ba[ext=m4a]
-}
-
-#######################################
-# Download all videos in a YouTube playlist as mp4.
-# Arguments:
-#   Link to the YouTube playlist.
-# Returns:
-#######################################
-playlist() {
-  if [[ "$#" != 1 ]]; then
-    echo "$PLAYLIST <PLAYLIST_URL>   Download all videos in the playlist as mp4."
-    return
-  fi
-
-  PLAYLIST_URL="$1"
-
-  yt-dlp -i "$PLAYLIST_URL" -S vcodec:h264,res,acodec:m4a -o "%(playlist)s/%(title)s.%(ext)s"
+main() {
+  case "${1:-}" in
+    mp4)      shift; mp4 "$@" ;;
+    m4a)      shift; m4a "$@" ;;
+    playlist) shift; playlist "$@" ;;
+    *)        show_usage; exit 1 ;;
+  esac
 }
 
 main "$@"
