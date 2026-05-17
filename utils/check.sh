@@ -1,7 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check and return true/false.
 
+# OS / arch constants exposed for sourcing scripts.
+# shellcheck disable=SC2034
 # Variables
 declare -r TRUE=0
 declare -r FALSE=1
@@ -17,7 +19,8 @@ ARCH_ARM="arm64"
 ARCH_X64="x86_64"
 
 check_os() {
-  if [[ "$UNAME_S" =~ "$1" ]]; then
+  local pattern="$1"
+  if [[ "$UNAME_S" =~ $pattern ]]; then
     return $TRUE
   else
     return $FALSE
@@ -25,7 +28,8 @@ check_os() {
 }
 
 check_arch() {
-  if [[ "$UNAME_M" =~ "$1" ]]; then
+  local pattern="$1"
+  if [[ "$UNAME_M" =~ $pattern ]]; then
     return $TRUE
   else
     return $FALSE
@@ -52,9 +56,9 @@ check_cmd() {
 }
 
 check_exist() {
-  test -e "$1" >/dev/null 2>&1
+  test -e "$1"
 }
 
 check_folder() {
-  test -d "$1" >/dev/null 2>&1
+  test -d "$1"
 }

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Handle file.
 
@@ -6,7 +6,8 @@
 SOURCE="${BASH_SOURCE[0]:-$0}"
 DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
 
-source $DIR_PATH/utils/index.sh
+# shellcheck source=utils/index.sh
+source "$DIR_PATH/utils/index.sh"
 
 backup() {
   if ! check_exist "$1"; then

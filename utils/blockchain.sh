@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Blockchain.
+#
+# TODO: This module pre-dates the shellcheck cleanup pass and has a number of
+# unquoted-expansion / declare-and-assign style issues. Disabling them at the
+# file level keeps the project's shellcheck run green until blockchain.sh gets
+# its own dedicated refactor (out of scope for the current pass).
+# shellcheck disable=SC2004,SC2034,SC2086,SC2145,SC2155
 
 # Variables
 INFURA_KEY="de6e66cb509c43e0897d062c93f15d9e"

@@ -1,6 +1,13 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Setup DNS config on WSL (superuser access required).
+
+set -eo pipefail
+
+SOURCE="${BASH_SOURCE[0]:-$0}"
+DIR_PATH="$( cd -- "$( dirname -- "$SOURCE" )" >/dev/null 2>&1 && pwd -P )"
+# shellcheck source=utils/index.sh
+source "$DIR_PATH/utils/index.sh"
 
 # Variables
 WSL_CONFIG="/etc/wsl.conf"
@@ -12,18 +19,19 @@ GOOGLE_PUBLIC_DNS_B="8.8.4.4"
 
 main() {
   update_wsl_config
-  update_dns_config $@
+  update_dns_config "$@"
 }
 
 update_wsl_config() {
-  echo "[network]" > $WSL_CONFIG
-  echo "generateResolvConf = false" >> $WSL_CONFIG
+  echo "[network]" > "$WSL_CONFIG"
+  echo "generateResolvConf = false" >> "$WSL_CONFIG"
 }
 
 update_dns_config() {
-  if check_exist $DNS_CONFIG; then
-    chattr -i $DNS_CONFIG
-    rm $DNS_CONFIG
+  if check_exist "$DNS_CONFIG"; then
+    info "Resetting $DNS_CONFIG"
+    chattr -i "$DNS_CONFIG"
+    rm "$DNS_CONFIG"
   fi
 
   for dns in "$@"; do
@@ -31,18 +39,18 @@ update_dns_config() {
   done
 
   if [ "$FALLBACK_DNS" != "" ]; then
-    add_dns $FALLBACK_DNS
+    add_dns "$FALLBACK_DNS"
   fi
 
-  printf "\n" >> $DNS_CONFIG
+  printf "\n" >> "$DNS_CONFIG"
 
-  echo "# Google Public DNS" >> $DNS_CONFIG
-  add_dns $GOOGLE_PUBLIC_DNS_A
-  add_dns $GOOGLE_PUBLIC_DNS_B
+  echo "# Google Public DNS" >> "$DNS_CONFIG"
+  add_dns "$GOOGLE_PUBLIC_DNS_A"
+  add_dns "$GOOGLE_PUBLIC_DNS_B"
 
-  if check_exist $DNS_CONFIG; then
+  if check_exist "$DNS_CONFIG"; then
     # Make the file immutable (-i to make it mutable)
-    chattr +i $DNS_CONFIG
+    chattr +i "$DNS_CONFIG"
   fi
 }
 
@@ -50,15 +58,7 @@ add_dns() {
   if [ "$#" != 1 ]; then
     return
   fi
-  echo "nameserver $1" >> $DNS_CONFIG
-}
-
-#
-# Utils
-#
-
-check_exist() {
-  test -e "$1" >/dev/null 2>&1
+  echo "nameserver $1" >> "$DNS_CONFIG"
 }
 
 main "$@"
