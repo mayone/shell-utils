@@ -217,6 +217,42 @@ get_block_number() {
 }
 
 #######################################
+# Get block number in hexadecimal (raw eth_blockNumber value).
+# Arguments:
+#   Name of the chain or RPC URL of the node.
+# Outputs:
+#   Block number as a 0x-prefixed hex string.
+#######################################
+get_block_number_hex() {
+  show_usage() {
+    echo "Usage:"
+    echo "  $@ <node or rpc_url>"
+    echo ""
+    echo "Nodes:"
+    for NODE in ${NODES}; do
+      echo "  ${NODE}"
+    done
+    echo ""
+  }
+
+  if [ "$#" != 1 ]; then
+    show_usage "$0"
+    return
+  fi
+
+  local rpc_url="$( get_rpc_url $1 )"
+
+  if [[ $rpc_url == "$SOLANA_RPC" ]]; then
+    block_num=$( call_rpc $rpc_url getSlot $tx )
+  else
+    block_num=$( call_rpc $rpc_url eth_blockNumber )
+  fi
+
+  # raw hexadecimal value (get_block_number returns the decimal form)
+  [ ! -z "$block_num" ] && echo $block_num
+}
+
+#######################################
 # Get block.
 # Arguments:
 #   Name of the chain or RPC URL of the node.
