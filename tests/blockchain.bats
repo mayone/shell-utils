@@ -83,6 +83,37 @@ skip_network() {
 }
 
 # ---------------------------------------------------------------------------
+# get_block_number_hex -- RPC, network. Raw eth_blockNumber hex value.
+# ---------------------------------------------------------------------------
+
+@test "get_block_number_hex eth returns 0x-prefixed hex" {
+  skip_network
+  run get_block_number_hex eth
+  [ "$status" -eq 0 ]
+  [[ "$output" =~ ^0x[0-9a-fA-F]+$ ]]
+}
+
+@test "get_block_number_hex bsc returns 0x-prefixed hex" {
+  skip_network
+  run get_block_number_hex bsc
+  [ "$status" -eq 0 ]
+  [[ "$output" =~ ^0x[0-9a-fA-F]+$ ]]
+}
+
+@test "get_block_number and get_block_number_hex agree for eth" {
+  skip_network
+  run get_block_number eth
+  [ "$status" -eq 0 ]
+  local dec="$output"
+  run get_block_number_hex eth
+  [ "$status" -eq 0 ]
+  local hex="$output"
+  # Same block (allow +/-1 for a new block landing between the two calls).
+  local diff=$(( dec - hex ))
+  [ "${diff#-}" -le 1 ]
+}
+
+# ---------------------------------------------------------------------------
 # get_balance -- RPC, network.
 # ---------------------------------------------------------------------------
 
