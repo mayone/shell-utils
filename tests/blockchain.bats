@@ -54,32 +54,32 @@ skip_network() {
 # get_block_number -- RPC, network.
 # ---------------------------------------------------------------------------
 
-@test "get_block_number eth returns hex height" {
+@test "get_block_number eth returns decimal block height" {
   skip_network
   run get_block_number eth
   [ "$status" -eq 0 ]
-  [[ "$output" =~ ^0x[0-9a-fA-F]+$ ]]
+  [[ "$output" =~ ^[0-9]+$ ]]
 }
 
-@test "get_block_number bsc returns hex height" {
+@test "get_block_number bsc returns decimal block height" {
   skip_network
   run get_block_number bsc
   [ "$status" -eq 0 ]
-  [[ "$output" =~ ^0x[0-9a-fA-F]+$ ]]
+  [[ "$output" =~ ^[0-9]+$ ]]
 }
 
-@test "get_block_number polygon returns hex height" {
+@test "get_block_number polygon returns decimal block height" {
   skip_network
   run get_block_number polygon
   [ "$status" -eq 0 ]
-  [[ "$output" =~ ^0x[0-9a-fA-F]+$ ]]
+  [[ "$output" =~ ^[0-9]+$ ]]
 }
 
-@test "get_block_number polygonzk returns hex height" {
+@test "get_block_number polygonzk returns decimal block height" {
   skip_network
   run get_block_number polygonzk
   [ "$status" -eq 0 ]
-  [[ "$output" =~ ^0x[0-9a-fA-F]+$ ]]
+  [[ "$output" =~ ^[0-9]+$ ]]
 }
 
 # ---------------------------------------------------------------------------
