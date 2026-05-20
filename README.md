@@ -59,6 +59,22 @@ Wrapper around `ffmpeg` for common video / audio operations.
 
 Reference: [protrolium/ffmpeg.md](https://gist.github.com/protrolium/e0dbd4bb0f1a396fcb55)
 
+### `gdrive_unzip.sh`
+
+Unzip multi-part Google Drive zip downloads (e.g. `name-001.zip`,
+`name-002.zip`, ...) into a single merged folder.
+
+```sh
+./gdrive_unzip.sh ~/Downloads/foo-20260312T142757Z-1-001.zip
+# Auto-detects -001 ~ -NNN siblings; extracts all into ~/Downloads/
+# so the inner root folder becomes the merged output.
+
+./gdrive_unzip.sh <one_of_the_zips> <out_dir>   # explicit output directory
+```
+
+On macOS, uses `ditto` (which decodes UTF-8 filenames correctly, unlike
+Info-ZIP's `unzip`); falls back to `unzip -n` elsewhere.
+
 ### `png2icns.sh` (macOS)
 
 Convert a PNG file into a macOS `.icns` icon bundle via `sips` and
