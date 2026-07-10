@@ -38,10 +38,15 @@ identities.
 Thin wrapper around `yt-dlp`.
 
 ```sh
-./yt_dlp_wrapper.sh mp4 <YT_URL>
-./yt_dlp_wrapper.sh m4a <YT_URL>
-./yt_dlp_wrapper.sh playlist <PL_URL>
+./yt_dlp_wrapper.sh mp4      [-c] <YT_URL>
+./yt_dlp_wrapper.sh m4a      [-c] <YT_URL>
+./yt_dlp_wrapper.sh playlist [-c] <PL_URL>
 ```
+
+`-c` reuses Chrome's logged-in YouTube session
+(`--cookies-from-browser chrome`) to get past "confirm you're not a
+bot" checks. On macOS the first run asks for Keychain access to
+"Chrome Safe Storage" — allow it.
 
 ### `ffmpeg_wrapper.sh`
 
